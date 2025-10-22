@@ -3,6 +3,9 @@ import { Plus, Search, Package } from 'lucide-react';
 import { BrandPresetCard } from '../../components/BrandPresetCard';
 import { BrandPresetEditor } from '../../components/BrandPresetEditor';
 import { BrandPreset, BrandPresetFormData } from '../../types/brandkit';
+import * as brandKitService from '../../services/brandKitService';
+
+const MOCK_USER_ID = '00000000-0000-0000-0000-000000000000';
 
 export const BrandKit: React.FC = () => {
   const [presets, setPresets] = useState<BrandPreset[]>([]);
@@ -18,70 +21,8 @@ export const BrandKit: React.FC = () => {
   const loadPresets = async () => {
     setIsLoading(true);
     try {
-      setPresets([
-        {
-          id: '1',
-          name: 'PUP Main',
-          description: 'Main institutional branding for PUP',
-          isDefault: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          userId: 'user1',
-          logo: {
-            url: '/placeholder-logo.png',
-            alignment: 'center',
-            scale: 1,
-          },
-          colors: {
-            primary: '#8B0000',
-            secondary: '#FFD700',
-            background: '#1E293B',
-            text: '#F1F5F9',
-          },
-          signatory: {
-            name: 'Dr. Emanuel C. De Guzman',
-            position: 'University President',
-            visible: true,
-          },
-          header: {
-            institutionName: 'Polytechnic University of the Philippines',
-            departmentName: 'Office of the President',
-            address: 'Mabini Campus, Sta. Mesa, Manila',
-            motto: "The Country's 1st Polytechnic University",
-            alignment: 'center',
-            fontFamily: 'serif',
-            fontSize: 24,
-          },
-        },
-        {
-          id: '2',
-          name: 'IBITS Org',
-          description: 'Institute of Business and Information Technology Studies',
-          isDefault: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          userId: 'user1',
-          colors: {
-            primary: '#3B82F6',
-            secondary: '#8B5CF6',
-            background: '#1E293B',
-            text: '#F1F5F9',
-          },
-          signatory: {
-            name: 'Dr. Maria Santos',
-            position: 'Dean, IBITS',
-            visible: false,
-          },
-          header: {
-            institutionName: 'Polytechnic University of the Philippines',
-            departmentName: 'Institute of Business and Information Technology Studies',
-            address: 'Sto. Niño, Biñan City, Laguna',
-            alignment: 'center',
-            fontFamily: 'serif',
-            fontSize: 22,
-          },
-        },
-      ]);
+      const fetchedPresets = await brandKitService.getBrandPresets(MOCK_USER_ID);
+      setPresets(fetchedPresets);
     } catch (error) {
       console.error('Error loading presets:', error);
     } finally {
@@ -90,102 +31,56 @@ export const BrandKit: React.FC = () => {
   };
 
   const handleCreatePreset = async (data: BrandPresetFormData) => {
-    const newPreset: BrandPreset = {
-      id: Date.now().toString(),
-      name: data.name,
-      description: data.description,
-      isDefault: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      userId: 'user1',
-      logo: data.logoFile
-        ? {
-            url: URL.createObjectURL(data.logoFile),
-            alignment: data.logoAlignment,
-            scale: data.logoScale,
-          }
-        : undefined,
-      colors: {
-        primary: data.primaryColor,
-        secondary: data.secondaryColor,
-        background: data.backgroundColor,
-        text: data.textColor,
-      },
-      signatory: {
-        name: data.signatoryName,
-        position: data.signatoryPosition,
-        signatureUrl: data.signatureFile ? URL.createObjectURL(data.signatureFile) : undefined,
-        visible: data.signatoryVisible,
-      },
-      header: {
-        institutionName: data.institutionName,
-        departmentName: data.departmentName,
-        address: data.address,
-        motto: data.motto,
-        alignment: data.headerAlignment,
-        fontFamily: data.headerFontFamily,
-        fontSize: data.headerFontSize,
-      },
-    };
-
-    setPresets([...presets, newPreset]);
+    try {
+      const newPreset = await brandKitService.createBrandPreset(MOCK_USER_ID, data);
+      setPresets([newPreset, ...presets]);
+    } catch (error) {
+      console.error('Error creating preset:', error);
+      alert('Failed to create preset. Please try again.');
+    }
   };
 
   const handleEditPreset = async (data: BrandPresetFormData) => {
     if (!editingPreset) return;
 
-    const updatedPreset: BrandPreset = {
-      ...editingPreset,
-      name: data.name,
-      description: data.description,
-      updatedAt: new Date(),
-      logo: data.logoFile
-        ? {
-            url: URL.createObjectURL(data.logoFile),
-            alignment: data.logoAlignment,
-            scale: data.logoScale,
-          }
-        : editingPreset.logo,
-      colors: {
-        primary: data.primaryColor,
-        secondary: data.secondaryColor,
-        background: data.backgroundColor,
-        text: data.textColor,
-      },
-      signatory: {
-        name: data.signatoryName,
-        position: data.signatoryPosition,
-        signatureUrl: data.signatureFile
-          ? URL.createObjectURL(data.signatureFile)
-          : editingPreset.signatory.signatureUrl,
-        visible: data.signatoryVisible,
-      },
-      header: {
-        institutionName: data.institutionName,
-        departmentName: data.departmentName,
-        address: data.address,
-        motto: data.motto,
-        alignment: data.headerAlignment,
-        fontFamily: data.headerFontFamily,
-        fontSize: data.headerFontSize,
-      },
-    };
-
-    setPresets(presets.map((p) => (p.id === editingPreset.id ? updatedPreset : p)));
-    setEditingPreset(null);
+    try {
+      const updatedPreset = await brandKitService.updateBrandPreset(
+        editingPreset.id,
+        MOCK_USER_ID,
+        data,
+        editingPreset
+      );
+      setPresets(presets.map((p) => (p.id === editingPreset.id ? updatedPreset : p)));
+      setEditingPreset(null);
+    } catch (error) {
+      console.error('Error updating preset:', error);
+      alert('Failed to update preset. Please try again.');
+    }
   };
 
-  const handleDeletePreset = (id: string) => {
-    setPresets(presets.filter((p) => p.id !== id));
+  const handleDeletePreset = async (id: string) => {
+    try {
+      await brandKitService.deleteBrandPreset(id, MOCK_USER_ID);
+      setPresets(presets.filter((p) => p.id !== id));
+    } catch (error) {
+      console.error('Error deleting preset:', error);
+      alert('Failed to delete preset. Please try again.');
+    }
   };
 
-  const handleSetDefault = (id: string) => {
-    setPresets(
-      presets.map((p) => ({
-        ...p,
-        isDefault: p.id === id,
-      }))
-    );
+  const handleSetDefault = async (id: string) => {
+    try {
+      await brandKitService.setDefaultPreset(MOCK_USER_ID, id);
+      setPresets(
+        presets.map((p) => ({
+          ...p,
+          isDefault: p.id === id,
+        }))
+      );
+    } catch (error) {
+      console.error('Error setting default preset:', error);
+      alert('Failed to set default preset. Please try again.');
+    }
   };
 
   const handleApplyPreset = (preset: BrandPreset) => {
