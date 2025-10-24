@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 import { BrandPreset, BrandPresetFormData } from '../types/brandkit';
 
 const uploadFile = async (file: File, bucket: string, userId: string): Promise<string> => {

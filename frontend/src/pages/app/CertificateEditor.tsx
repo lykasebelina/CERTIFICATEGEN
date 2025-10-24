@@ -6,6 +6,7 @@ import MockCertificateElements from "../../components/MockCertificateElements";
 import { useCertificate } from "../../context/CertificateContext";
 import EditorTopBar from "../../components/EditorTopBar";
 import EditorBottomBar from "../../components/EditorBottomBar";
+import EditorDropdownSidebar from "../../components/EditorDropdownSidebar";
 
 const CertificateEditor: React.FC = () => {
   const navigate = useNavigate();
@@ -15,11 +16,12 @@ const CertificateEditor: React.FC = () => {
   const [dragging, setDragging] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
   const [zoom, setZoom] = useState(100);
   const [activeToolTab, setActiveToolTab] = useState<"select" | "pattern">("select");
+  const [rightSidebarWidth, setRightSidebarWidth] = useState(0); // Track right sidebar width
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const scale = zoom / 100;
 
-  // 🧮 Auto zoom for smaller screens
+  // Auto zoom for smaller screens
   useEffect(() => {
     const handleResize = () => {
       const container = document.getElementById("certificate-container");
@@ -31,7 +33,6 @@ const CertificateEditor: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 🧭 Return if no certificate is loaded
   if (!currentCertificate) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-slate-900 text-slate-300">
@@ -46,7 +47,6 @@ const CertificateEditor: React.FC = () => {
     );
   }
 
-  // 🖱️ Dragging logic
   const handleMouseDown = (
     e: React.MouseEvent,
     element: CertificateElement | CertificateLayer
@@ -68,7 +68,6 @@ const CertificateEditor: React.FC = () => {
     const x = (e.clientX - rect.left - dragging.offsetX) / (zoom / 100);
     const y = (e.clientY - rect.top - dragging.offsetY) / (zoom / 100);
 
-    // Update element positions in certificate
     if (currentCertificate.layers) {
       currentCertificate.layers = currentCertificate.layers.map((layer) =>
         layer.id === dragging.id ? { ...layer, x, y } : layer
@@ -81,7 +80,6 @@ const CertificateEditor: React.FC = () => {
 
   const handleMouseUp = () => setDragging(null);
 
-  // 🧱 Render Layout
   return (
     <div
       className="h-screen w-full bg-slate-900 flex flex-col"
@@ -89,16 +87,15 @@ const CertificateEditor: React.FC = () => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      {/* 🧭 Top Toolbar */}
       <EditorTopBar
         activeToolTab={activeToolTab}
         setActiveToolTab={setActiveToolTab}
       />
 
-      {/* 🪄 Certificate Canvas */}
       <div
         id="certificate-container"
-        className="flex-1 overflow-auto bg-slate-900 flex justify-center items-start"
+        className="flex-1 overflow-auto bg-slate-900 flex justify-center items-start transition-all duration-300"
+        style={{ marginRight: `${rightSidebarWidth}px` }} // Make room for right sidebar
       >
         <div
           className="inline-block mt-2"
@@ -113,7 +110,6 @@ const CertificateEditor: React.FC = () => {
               <div className="relative w-full h-full bg-white shadow-lg overflow-hidden">
                 <MockCertificateElements />
 
-                {/* Layers */}
                 {currentCertificate.layers?.map((layer) => (
                   <div
                     key={layer.id}
@@ -140,7 +136,6 @@ const CertificateEditor: React.FC = () => {
                   </div>
                 ))}
 
-                {/* Text elements */}
                 {currentCertificate.elements?.map((el) => (
                   <div
                     key={el.id}
@@ -169,8 +164,9 @@ const CertificateEditor: React.FC = () => {
         </div>
       </div>
 
-      {/* 📄 Bottom Controls */}
       <EditorBottomBar zoom={zoom} setZoom={setZoom} />
+      
+      <EditorDropdownSidebar onWidthChange={setRightSidebarWidth} />
     </div>
   );
 };
