@@ -15,7 +15,7 @@ const EditorDropdownSidebar: React.FC<EditorDropdownSidebarProps> = ({ onWidthCh
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const sidebarItems: SidebarItem[] = [
-    { id: "ai-autofill", icon: <Sparkles size={18} />, label: "AI Autofill" },
+    { id: "ai-autofill", icon: <Sparkles size={15} />, label: "AI Autofill" },
     { id: "ai-design", icon: <Wand2 size={18} />, label: "AI Design" },
     { id: "icons", icon: <Users size={18} />, label: "Icons" },
     { id: "text", icon: <Type size={18} />, label: "Text" },
@@ -23,25 +23,18 @@ const EditorDropdownSidebar: React.FC<EditorDropdownSidebarProps> = ({ onWidthCh
     { id: "brand-kit", icon: <Palette size={18} />, label: "Brand Kit" },
   ];
 
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-  // Notify parent about sidebar width (so main canvas can shift)
   useEffect(() => {
     if (onWidthChange) {
-      onWidthChange(isMenuOpen ? 120 : 0); // 120px width when open
+      onWidthChange(isMenuOpen ? 120 : 0);
     }
   }, [isMenuOpen, onWidthChange]);
 
   return (
-    <div
-      className="fixed top-[88px] right-6 z-50 flex flex-col items-center"
-      // 88px = just below your 80px top bar + small spacing
-    >
-      {/* Button container */}
-      <div className="relative flex flex-col items-center">
-        {/* Toggle button (always in the same spot) */}
+    <div className="fixed top-[88px] right-[calc(1.5rem+var(--scrollbar-width,16px))] z-50 flex flex-col items-center pointer-events-none">
+      <div className="relative flex flex-col items-center pointer-events-auto">
+        {/* Toggle button */}
         <button
           onClick={toggleMenu}
           className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center transition-all shadow-xl hover:scale-110 hover:shadow-blue-500/50"
@@ -49,9 +42,9 @@ const EditorDropdownSidebar: React.FC<EditorDropdownSidebarProps> = ({ onWidthCh
           <Sparkles size={22} />
         </button>
 
-        {/* Dropdown (slides down vertically under button) */}
+        {/* Dropdown (centered below toggle) */}
         {isMenuOpen && (
-          <div className="absolute top-14 right-0 bg-gradient-to-b from-blue-600 via-blue-700 to-purple-700 rounded-2xl shadow-xl overflow-hidden w-24 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute left-1/2 -translate-x-1/2 top-14 bg-gradient-to-b from-blue-600 via-blue-700 to-purple-700 rounded-2xl shadow-xl overflow-hidden w-28 animate-in fade-in slide-in-from-top-2 duration-200">
             {sidebarItems.map((item, index) => (
               <button
                 key={item.id}

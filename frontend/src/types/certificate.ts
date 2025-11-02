@@ -1,21 +1,39 @@
+// certificate.ts file
+
 export interface CertificateElement {
   id: string;
-  type: 'text' | 'image' | 'signature';
-  content: string;
+  type:
+    | "text"
+    | "image"
+    | "signature"
+    | "background"
+    | "border"
+    | "cornerOrnament"
+    | "decorativeIcon"
+    | "logo"
+    | "qrCode"
+    | "watermark"
+    | "backgroundPattern"
+    | "margin"
+    | "frameElements";
+  content?: string;
   x: number;
   y: number;
   zIndex?: number;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   fontSize?: number;
   fontFamily?: string;
   color?: string;
   bold?: boolean;
   italic?: boolean;
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
+  imageUrl?: string;
+  opacity?: number;
+  fontWeight?: string;
+  textAlign?: string;
+  backgroundColor?: string;
 }
-
-
 
 export type CertificateSize =
   | "a4-portrait"
@@ -33,12 +51,11 @@ export interface CertificateData {
   backgroundColor?: string;
   backgroundImage?: string;
   size: CertificateSize;
-  layers?: CertificateLayer[];   
+  layers?: CertificateLayer[];
   elements: CertificateElement[];
   createdAt: Date;
-   
+  prompt?: string;
 }
-
 
 export interface AIPrompt {
   description: string;
@@ -57,5 +74,3 @@ export interface CertificateLayer {
   height: number;
   zIndex?: number;
 }
-
-

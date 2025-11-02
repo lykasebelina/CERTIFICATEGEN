@@ -13,10 +13,15 @@ const CertificateEditor: React.FC = () => {
   const { currentCertificate } = useCertificate();
 
   const [activeElement, setActiveElement] = useState<string | null>(null);
-  const [dragging, setDragging] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
+  const [dragging, setDragging] = useState<{
+    id: string;
+    offsetX: number;
+    offsetY: number;
+  } | null>(null);
+
   const [zoom, setZoom] = useState(100);
   const [activeToolTab, setActiveToolTab] = useState<"select" | "pattern">("select");
-  const [rightSidebarWidth, setRightSidebarWidth] = useState(0); // Track right sidebar width
+  const [rightSidebarWidth, setRightSidebarWidth] = useState(0);
 
   const layoutRef = useRef<HTMLDivElement>(null);
   const scale = zoom / 100;
@@ -53,8 +58,10 @@ const CertificateEditor: React.FC = () => {
   ) => {
     e.stopPropagation();
     setActiveElement(element.id);
+
     const rect = layoutRef.current?.getBoundingClientRect();
     if (!rect) return;
+
     setDragging({
       id: element.id,
       offsetX: e.clientX - (rect.left + element.x * (zoom / 100)),
@@ -64,6 +71,7 @@ const CertificateEditor: React.FC = () => {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!dragging || !layoutRef.current) return;
+
     const rect = layoutRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left - dragging.offsetX) / (zoom / 100);
     const y = (e.clientY - rect.top - dragging.offsetY) / (zoom / 100);
@@ -73,6 +81,7 @@ const CertificateEditor: React.FC = () => {
         layer.id === dragging.id ? { ...layer, x, y } : layer
       );
     }
+
     currentCertificate.elements = currentCertificate.elements.map((el) =>
       el.id === dragging.id ? { ...el, x, y } : el
     );
@@ -87,15 +96,12 @@ const CertificateEditor: React.FC = () => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      <EditorTopBar
-        activeToolTab={activeToolTab}
-        setActiveToolTab={setActiveToolTab}
-      />
+      <EditorTopBar activeToolTab={activeToolTab} setActiveToolTab={setActiveToolTab} />
 
       <div
         id="certificate-container"
         className="flex-1 overflow-auto bg-slate-900 flex justify-center items-start transition-all duration-300"
-        style={{ marginRight: `${rightSidebarWidth}px` }} // Make room for right sidebar
+        style={{ marginRight: `${rightSidebarWidth}px` }}
       >
         <div
           className="inline-block mt-2"
@@ -165,7 +171,6 @@ const CertificateEditor: React.FC = () => {
       </div>
 
       <EditorBottomBar zoom={zoom} setZoom={setZoom} />
-      
       <EditorDropdownSidebar onWidthChange={setRightSidebarWidth} />
     </div>
   );

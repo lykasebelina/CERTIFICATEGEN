@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { CertificateData, CertificateSize } from '../types/certificate';
+// CertificateContext.tsx
+
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { CertificateData, CertificateSize } from "../types/certificate";
 
 interface CertificateContextType {
   currentCertificate: CertificateData | null;
@@ -12,7 +14,7 @@ const CertificateContext = createContext<CertificateContextType | undefined>(und
 export const useCertificate = () => {
   const context = useContext(CertificateContext);
   if (!context) {
-    throw new Error('useCertificate must be used within a CertificateProvider');
+    throw new Error("useCertificate must be used within a CertificateProvider");
   }
   return context;
 };
@@ -35,19 +37,17 @@ export const CertificateProvider: React.FC<CertificateProviderProps> = ({ childr
 
   const createCertificateFromPreview = (size: CertificateSize, prompt: string): CertificateData => {
     const dimensions = SIZE_DIMENSIONS[size];
-
     const newCertificate: CertificateData = {
       id: `cert_${Date.now()}`,
-      name: 'Untitled Certificate',
+      name: "Untitled Certificate",
       size,
       width: dimensions.width,
       height: dimensions.height,
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff",
       elements: [],
       createdAt: new Date(),
       prompt,
     };
-
     return newCertificate;
   };
 

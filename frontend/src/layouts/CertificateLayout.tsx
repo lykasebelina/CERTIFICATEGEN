@@ -23,7 +23,6 @@ const SIZE_MAP: Record<
   "letter-landscape": { width: 11, height: 8.5 },
 };
 
-// DPI (dots per inch) — common baseline for web
 const DPI = 96;
 
 const CertificateLayout: React.FC<CertificateLayoutProps> = ({
@@ -32,7 +31,6 @@ const CertificateLayout: React.FC<CertificateLayoutProps> = ({
 }) => {
   const { width, height } = SIZE_MAP[size];
 
-  // Convert inches to pixels (1 inch = 96 px)
   const canvasWidth = width * DPI;
   const canvasHeight = height * DPI;
 
