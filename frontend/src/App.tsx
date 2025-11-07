@@ -14,6 +14,7 @@ import BrandKit from "./pages/app/BrandKit";
 import MyCertificates from "./pages/app/MyCertificates";
 import Favorites from "./pages/app/Favorites";
 import Settings from "./pages/app/Settings";
+import ResetPassword from "./pages/public/ResetPassword";
 
 import PublicLayout from "./layouts/PublicLayout";
 import PrivateLayout from "./layouts/PrivateLayout";
@@ -48,6 +49,7 @@ function App() {
           <Route path="/" element={<PublicLayoutWrapper />}>
             <Route index element={<Home />} />
           </Route>
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* 🔒 Private Routes */}
           <Route path="/app" element={<PrivateLayout />}>

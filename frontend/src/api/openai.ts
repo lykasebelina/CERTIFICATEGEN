@@ -1,3 +1,4 @@
+// openai.ts
 import OpenAI from "openai";
 import { CertificateElement } from "../types/certificate";
 
@@ -22,6 +23,7 @@ interface CertificateSize {
   height: number;
 }
 
+// Real certificate canvas sizes
 const SIZE_MAP: Record<string, CertificateSize> = {
   "a4-portrait": { width: 794, height: 1123 },
   "a4-landscape": { width: 1123, height: 794 },
@@ -31,207 +33,97 @@ const SIZE_MAP: Record<string, CertificateSize> = {
   "letter-landscape": { width: 1056, height: 816 },
 };
 
-// === IMAGE GENERATION HELPERS ===
-async function generateImageWithDALLE(
+// --- Image generation helper using GPT Image API ---
+async function generateImageWithGPTImage(
   prompt: string,
-  size: "1024x1024" | "1792x1024" | "1024x1792" = "1024x1024"
+  size: "1024x1024" | "1024x1536" | "1536x1024"
 ): Promise<string> {
   try {
     const response = await openai.images.generate({
-      model: "dall-e-3",
+      model: "gpt-image-1",
       prompt,
-      n: 1,
       size,
-      quality: "standard",
-      style: "natural",
+      n: 1,
     });
 
-    // ✅ Type-safe safeguard
-    if (!response?.data || response.data.length === 0 || !response.data[0].url) {
-      console.warn("⚠️ No image URL returned from DALL-E");
+    const url = response?.data?.[0]?.url;
+    if (!url) {
+      console.warn("⚠️ No image URL returned from image API.");
       return "";
     }
-
-    return response.data[0].url;
+    return url;
   } catch (error) {
-    console.error("❌ Error generating image with DALL-E:", error);
+    console.error("❌ Error generating image with gpt-image-1:", error);
     throw error;
   }
 }
 
-
+// --- Map your canvas size to a supported GPT API size ---
 function determineImageSize(
   width: number,
   height: number
-): "1024x1024" | "1792x1024" | "1024x1792" {
+): "1024x1024" | "1024x1536" | "1536x1024" {
   const aspectRatio = width / height;
-  if (aspectRatio > 1.5) return "1792x1024";
-  if (aspectRatio < 0.7) return "1024x1792";
-  return "1024x1024";
+
+  if (aspectRatio > 1.2) return "1536x1024"; // landscape
+  if (aspectRatio < 0.8) return "1024x1536"; // portrait
+  return "1024x1024"; // square-ish
 }
 
-// === MAIN GENERATOR ===
+// === MAIN GENERATOR (background-only) ===
 export async function generateCertificateElements(
   userPrompt: string,
   selectedSize: string = "a4-landscape"
 ): Promise<CertificateElement[]> {
   const canvasSize = SIZE_MAP[selectedSize] || SIZE_MAP["a4-landscape"];
 
-  const layerDefinitions: LayerDefinition[] = [
-    {
-      type: "background",
-      prompt: `Full certificate background design with ${userPrompt}. Professional, elegant, high-quality certificate background. No text, no borders, just the background pattern or color gradient. Size: ${canvasSize.width}x${canvasSize.height}px`,
-      x: 0,
-      y: 0,
-      width: canvasSize.width,
-      height: canvasSize.height,
-      zIndex: 1,
-      opacity: 1,
-    },
-    {
-      type: "border",
-      prompt: `Elegant decorative border frame for a certificate with ${userPrompt}. PNG format with transparent background. Only the border frame, no background fill. Professional and ornate design.`,
-      x: 20,
-      y: 20,
-      width: canvasSize.width - 40,
-      height: canvasSize.height - 40,
-      zIndex: 10,
-      opacity: 1,
-    },
-    {
-      type: "cornerOrnament",
-      prompt: `Top-left corner ornamental flourish for certificate with ${userPrompt} theme. PNG with transparent background. Elegant, detailed, decorative.`,
-      x: 40,
-      y: 40,
-      width: 120,
-      height: 120,
-      zIndex: 20,
-      opacity: 1,
-    },
-    {
-      type: "cornerOrnament",
-      prompt: `Top-right corner ornamental flourish for certificate with ${userPrompt} theme. PNG with transparent background. Mirror of top-left, elegant and detailed.`,
-      x: canvasSize.width - 160,
-      y: 40,
-      width: 120,
-      height: 120,
-      zIndex: 20,
-      opacity: 1,
-    },
-    {
-      type: "cornerOrnament",
-      prompt: `Bottom-left corner ornamental flourish for certificate with ${userPrompt} theme. PNG with transparent background. Elegant and detailed.`,
-      x: 40,
-      y: canvasSize.height - 160,
-      width: 120,
-      height: 120,
-      zIndex: 20,
-      opacity: 1,
-    },
-    {
-      type: "cornerOrnament",
-      prompt: `Bottom-right corner ornamental flourish for certificate with ${userPrompt} theme. PNG with transparent background. Mirror of bottom-left, elegant and detailed.`,
-      x: canvasSize.width - 160,
-      y: canvasSize.height - 160,
-      width: 120,
-      height: 120,
-      zIndex: 20,
-      opacity: 1,
-    },
-    {
-      type: "decorativeIcon",
-      prompt: `Decorative seal or emblem for certificate center with ${userPrompt} theme. PNG with transparent background. Circular or shield-shaped, professional and elegant.`,
-      x: canvasSize.width / 2 - 80,
-      y: canvasSize.height / 2 - 80,
-      width: 160,
-      height: 160,
-      zIndex: 15,
-      opacity: 0.3,
-    },
-  ];
+  const backgroundLayer: LayerDefinition = {
+    type: "background",
+    prompt: `
+      Full-bleed certificate background for ${selectedSize}.
+      ${userPrompt}.
+      Create a professional, elegant, high-quality background.
+      No text, no borders, no watermarks, no logos.
+      The generated image must fill the canvas and can be cropped or scaled
+      to fit A4, Legal, or Letter sizes.
+    `,
+    x: 0,
+    y: 0,
+    width: canvasSize.width,
+    height: canvasSize.height,
+    zIndex: 1,
+    opacity: 1,
+  };
 
   const elements: CertificateElement[] = [];
 
-  console.log("🎨 Starting certificate generation...");
+  console.log("🎨 Starting background generation...");
 
-  for (const layer of layerDefinitions) {
-    try {
-      console.log(`⏳ Generating ${layer.type}...`);
-      const imageSize = determineImageSize(layer.width, layer.height);
-      const imageUrl = await generateImageWithDALLE(layer.prompt, imageSize);
+  try {
+    // Pick a supported API size based on your canvas aspect ratio
+    const imageSize = determineImageSize(backgroundLayer.width, backgroundLayer.height);
+    console.log(`⏳ Generating background at ${imageSize}...`);
 
-      elements.push({
-        id: `${layer.type}-${Date.now()}-${Math.random()}`,
-        type: layer.type,
-        x: layer.x,
-        y: layer.y,
-        width: layer.width,
-        height: layer.height,
-        zIndex: layer.zIndex,
-        imageUrl,
-        opacity: layer.opacity,
-      });
+    const imageUrl = await generateImageWithGPTImage(backgroundLayer.prompt, imageSize);
 
-      console.log(`✅ Generated ${layer.type}`);
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // small delay between layers
-    } catch (error) {
-      console.error(`❌ Failed to generate ${layer.type}:`, error);
-    }
+    // Use real certificate canvas size, image will be cropped/scaled
+    elements.push({
+      id: `background-${Date.now()}-${Math.random()}`,
+      type: "background",
+      x: backgroundLayer.x,
+      y: backgroundLayer.y,
+      width: canvasSize.width,
+      height: canvasSize.height,
+      zIndex: backgroundLayer.zIndex,
+      imageUrl,
+      opacity: backgroundLayer.opacity,
+    });
+
+    console.log("✅ Background generated");
+    await new Promise((resolve) => setTimeout(resolve, 250)); // optional small delay
+  } catch (error) {
+    console.error("❌ Failed to generate background:", error);
   }
 
-  // === ADD STATIC TEXT ELEMENTS ===
-  const textElements: CertificateElement[] = [
-    {
-      id: "title-text",
-      type: "text",
-      x: canvasSize.width / 2,
-      y: canvasSize.height * 0.25,
-      width: canvasSize.width * 0.8,
-      zIndex: 40,
-      content: "CERTIFICATE OF ACHIEVEMENT",
-      fontSize: 42,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: "#1a1a1a",
-    },
-    {
-      id: "subtitle-text",
-      type: "text",
-      x: canvasSize.width / 2,
-      y: canvasSize.height * 0.35,
-      width: canvasSize.width * 0.7,
-      zIndex: 41,
-      content: "This is proudly presented to",
-      fontSize: 18,
-      textAlign: "center",
-      color: "#444444",
-    },
-    {
-      id: "recipient-name",
-      type: "text",
-      x: canvasSize.width / 2,
-      y: canvasSize.height * 0.45,
-      width: canvasSize.width * 0.7,
-      zIndex: 42,
-      content: "Recipient Name",
-      fontSize: 36,
-      fontWeight: "bold",
-      textAlign: "center",
-      color: "#000000",
-    },
-    {
-      id: "description-text",
-      type: "text",
-      x: canvasSize.width / 2,
-      y: canvasSize.height * 0.6,
-      width: canvasSize.width * 0.7,
-      zIndex: 43,
-      content: "For outstanding achievement and dedication",
-      fontSize: 16,
-      textAlign: "center",
-      color: "#555555",
-    },
-  ];
-
-  return [...elements.sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0)), ...textElements];
+  return elements.sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
 }

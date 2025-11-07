@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CertificateElement, CertificateLayer } from "../../types/certificate";
 import CertificateLayout from "../../layouts/CertificateLayout";
-import MockCertificateElements from "../../components/MockCertificateElements";
 import { useCertificate } from "../../context/CertificateContext";
 import EditorTopBar from "../../components/EditorTopBar";
 import EditorBottomBar from "../../components/EditorBottomBar";
@@ -114,7 +113,7 @@ const CertificateEditor: React.FC = () => {
           <div ref={layoutRef}>
             <CertificateLayout size={currentCertificate.size}>
               <div className="relative w-full h-full bg-white shadow-lg overflow-hidden">
-                <MockCertificateElements />
+               
 
                 {currentCertificate.layers?.map((layer) => (
                   <div
