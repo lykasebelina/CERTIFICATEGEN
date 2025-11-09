@@ -25,11 +25,11 @@ interface LockoutInfo {
 }
 
 const LOCKOUT_LIMIT = 5;
-const LOCKOUT_DURATION = 60 * 1000;
+const LOCKOUT_DURATION = 3 * 60 * 1000;
 
 const OTP_LIMIT = 3;
 const OTP_WINDOW = 5 * 60 * 1000;
-const OTP_LOCK_DURATION = 2 * 60 * 1000;
+const OTP_LOCK_DURATION = 60 * 1000;
 
 export default function AuthModal({
   isOpen,
@@ -155,7 +155,7 @@ export default function AuthModal({
       localStorage.setItem("otp_lock", JSON.stringify({ lockedUntil }));
       setOtpLock({ lockedUntil });
       setOtpCountdown(OTP_LOCK_DURATION / 1000);
-      alert("⚠️ Too many OTP requests. Please wait 2 minutes before retrying.");
+      alert("⚠️ Too many OTP requests. Please wait 1 minute before retrying.");
       return false;
     }
 
@@ -213,7 +213,7 @@ export default function AuthModal({
       setLockout(updated);
       localStorage.setItem("auth_lockout", JSON.stringify(updated));
       setCountdown(LOCKOUT_DURATION / 1000);
-      alert("⚠️ Too many failed attempts. Please wait 1 minute before retrying.");
+      alert("⚠️ Too many failed attempts. Please wait 3 minutes before retrying.");
     } else {
       const updated = {
         failedAttempts: newAttempts,
