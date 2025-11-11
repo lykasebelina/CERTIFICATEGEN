@@ -9,12 +9,10 @@ interface EditorBottomBarProps {
 const EditorBottomBar: React.FC<EditorBottomBarProps> = ({ zoom, setZoom }) => {
   return (
     <div className="flex-none w-full h-20 flex flex-wrap justify-between items-center gap-4 p-5 border-t border-slate-700 bg-slate-900">
-      {/* Left */}
       <div className="px-3 py-1 border-2 border-cyan-400 rounded-full text-white text-sm font-medium">
         1 / 30
       </div>
 
-      {/* Right */}
       <div className="flex flex-wrap items-center gap-4">
         <input
           type="range"

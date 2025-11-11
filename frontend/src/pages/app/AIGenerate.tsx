@@ -1,11 +1,10 @@
-// AIGenerate.tsx file
-
 import { useState } from "react";
 import { Lightbulb, Palette, Plus, Layout, Sparkles } from "lucide-react";
 import CertificatePreview from "../../components/CertificatePreview";
 import { useCertificate } from "../../context/CertificateContext";
-import { generateCertificateElements } from "../../api/openai";
+import { generateCertificateElements } from "../../utils/openai";
 import { CertificateElement } from "../../types/certificate";
+import { useNavigate } from "react-router-dom";
 
 type CertificateSize =
   | "a4-portrait"
@@ -16,18 +15,15 @@ type CertificateSize =
   | "letter-landscape";
 
 function AIGenerate() {
-  const { createCertificateFromPreview, setCurrentCertificate } =
-    useCertificate();
+  const navigate = useNavigate();
+  const { createCertificateFromPreview, setCurrentCertificate } = useCertificate();
 
   const [prompt, setPrompt] = useState("");
   const [showSizeMenu, setShowSizeMenu] = useState(false);
-  const [selectedSize, setSelectedSize] =
-    useState<CertificateSize>("a4-landscape");
+  const [selectedSize, setSelectedSize] = useState<CertificateSize>("a4-landscape");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [generatedElements, setGeneratedElements] = useState<
-    CertificateElement[]
-  >([]);
+  const [generatedElements, setGeneratedElements] = useState<CertificateElement[]>([]);
 
   const sizes = [
     { id: "a4-portrait" as CertificateSize, label: "A4 (Portrait)" },
@@ -57,7 +53,7 @@ function AIGenerate() {
     const certificate = createCertificateFromPreview(selectedSize, prompt);
     certificate.elements = generatedElements;
     setCurrentCertificate(certificate);
-    setShowPreview(false);
+    navigate("/editor");
   };
 
   if (isGenerating) {
@@ -65,9 +61,7 @@ function AIGenerate() {
       <div className="h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-300 text-lg">
-            Generating certificate with AI...
-          </p>
+          <p className="text-slate-300 text-lg">Generating certificate with AI...</p>
           <p className="text-slate-500 text-sm mt-2">
             This may take 30–60 seconds as we generate each layer
           </p>
@@ -93,17 +87,12 @@ function AIGenerate() {
     <div className="h-screen flex flex-col items-center justify-center bg-slate-900 p-10">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-blue-400 mb-1">
-            AI Certificate Generator
-          </h1>
-          <p className="text-slate-400 text-base">
-            Describe your design and AI will create it
-          </p>
+          <h1 className="text-3xl font-bold text-blue-400 mb-1">AI Certificate Generator</h1>
+          <p className="text-slate-400 text-base">Describe your design and AI will create it</p>
         </div>
 
         <p className="text-slate-400 text-center mb-6 text-sm">
-          Describe your certificate design and we'll generate beautiful, layered
-          artwork using AI.
+          Describe your certificate design and we'll generate beautiful, layered artwork using AI.
         </p>
 
         <div className="relative mb-5 flex justify-center">
@@ -117,7 +106,6 @@ function AIGenerate() {
               />
 
               <div className="flex flex-col gap-2 p-2 border-l border-slate-700 relative">
-                {/* Add Files */}
                 <div className="relative group">
                   <button className="p-2 rounded-md transition-colors group/icon">
                     <Plus className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
@@ -129,7 +117,6 @@ function AIGenerate() {
                   </div>
                 </div>
 
-                {/* Use Predefined Prompts */}
                 <div className="relative group">
                   <button className="p-2 rounded-md transition-colors group/icon">
                     <Lightbulb className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
@@ -141,7 +128,6 @@ function AIGenerate() {
                   </div>
                 </div>
 
-                {/* Brand Preset */}
                 <div className="relative group">
                   <button className="p-2 rounded-md transition-colors group/icon">
                     <Palette className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
@@ -156,7 +142,6 @@ function AIGenerate() {
                   </div>
                 </div>
 
-                {/* Certificate Size Selector */}
                 <div className="relative">
                   <button
                     onClick={() => setShowSizeMenu(!showSizeMenu)}

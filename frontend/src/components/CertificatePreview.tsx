@@ -1,6 +1,4 @@
-// CertificatePreview.tsx
-
-import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef } from "react";
 import { Share2, Sparkles, ZoomIn, ZoomOut } from "lucide-react";
 import CertificateLayout from "../layouts/CertificateLayout";
 import CertificateTemplate from "./CertificateTemplate";
@@ -37,14 +35,6 @@ function CertificatePreview({
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [zoom, setZoom] = useState(75);
   const layoutRef = useRef<HTMLDivElement>(null);
-  const [layoutSize, setLayoutSize] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    if (layoutRef.current) {
-      const rect = layoutRef.current.getBoundingClientRect();
-      setLayoutSize({ width: rect.width, height: rect.height });
-    }
-  }, [size]);
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalPrompt(e.target.value);

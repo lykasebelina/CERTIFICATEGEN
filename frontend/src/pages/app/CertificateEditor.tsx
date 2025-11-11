@@ -1,48 +1,75 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { CertificateElement, CertificateLayer } from "../../types/certificate";
-import CertificateLayout from "../../layouts/CertificateLayout";
+import { CertificateElement } from "../../types/certificate";
 import { useCertificate } from "../../context/CertificateContext";
 import EditorTopBar from "../../components/EditorTopBar";
 import EditorBottomBar from "../../components/EditorBottomBar";
 import EditorDropdownSidebar from "../../components/EditorDropdownSidebar";
+import FabricCanvas from "../../components/FabricCanvas";
 
 const CertificateEditor: React.FC = () => {
   const navigate = useNavigate();
-  const { currentCertificate } = useCertificate();
+  const { currentCertificate, setCurrentCertificate } = useCertificate();
 
-  const [activeElement, setActiveElement] = useState<string | null>(null);
-  const [dragging, setDragging] = useState<{
-    id: string;
-    offsetX: number;
-    offsetY: number;
-  } | null>(null);
-
-  const [zoom, setZoom] = useState(100);
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(75);
   const [activeToolTab, setActiveToolTab] = useState<"select" | "pattern">("select");
   const [rightSidebarWidth, setRightSidebarWidth] = useState(0);
 
-  const layoutRef = useRef<HTMLDivElement>(null);
-  const scale = zoom / 100;
-
-  // Auto zoom for smaller screens
-  useEffect(() => {
-    const handleResize = () => {
-      const container = document.getElementById("certificate-container");
-      if (container && container.offsetWidth < 800) setZoom(80);
-      else setZoom(75);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+  const handleElementSelect = useCallback((id: string | null) => {
+    setSelectedElement(id);
   }, []);
+
+  const handleElementUpdate = useCallback(
+    (id: string, updates: Partial<CertificateElement>) => {
+      if (!currentCertificate) return;
+
+      const updatedElements = currentCertificate.elements.map((el) =>
+        el.id === id ? { ...el, ...updates } : el
+      );
+
+      setCurrentCertificate({
+        ...currentCertificate,
+        elements: updatedElements,
+      });
+    },
+    [currentCertificate, setCurrentCertificate]
+  );
+
+  const handleTextStyleChange = useCallback(
+    (style: {
+      fontSize?: number;
+      fontFamily?: string;
+      fontWeight?: string;
+      color?: string;
+      textAlign?: string;
+    }) => {
+      if (!selectedElement || !currentCertificate) return;
+
+      handleElementUpdate(selectedElement, style);
+    },
+    [selectedElement, currentCertificate, handleElementUpdate]
+  );
+
+  const handleDeleteElement = useCallback(() => {
+    if (!selectedElement || !currentCertificate) return;
+
+    const updatedElements = currentCertificate.elements.filter((el) => el.id !== selectedElement);
+
+    setCurrentCertificate({
+      ...currentCertificate,
+      elements: updatedElements,
+    });
+
+    setSelectedElement(null);
+  }, [selectedElement, currentCertificate, setCurrentCertificate]);
 
   if (!currentCertificate) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-slate-900 text-slate-300">
         <p className="text-xl mb-4">No certificate loaded</p>
         <button
-          onClick={() => navigate("/app/studio/ai-generate")}
+          onClick={() => navigate("/")}
           className="mt-8 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition"
         >
           Create New Certificate
@@ -51,121 +78,37 @@ const CertificateEditor: React.FC = () => {
     );
   }
 
-  const handleMouseDown = (
-    e: React.MouseEvent,
-    element: CertificateElement | CertificateLayer
-  ) => {
-    e.stopPropagation();
-    setActiveElement(element.id);
-
-    const rect = layoutRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    setDragging({
-      id: element.id,
-      offsetX: e.clientX - (rect.left + element.x * (zoom / 100)),
-      offsetY: e.clientY - (rect.top + element.y * (zoom / 100)),
-    });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!dragging || !layoutRef.current) return;
-
-    const rect = layoutRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left - dragging.offsetX) / (zoom / 100);
-    const y = (e.clientY - rect.top - dragging.offsetY) / (zoom / 100);
-
-    if (currentCertificate.layers) {
-      currentCertificate.layers = currentCertificate.layers.map((layer) =>
-        layer.id === dragging.id ? { ...layer, x, y } : layer
-      );
-    }
-
-    currentCertificate.elements = currentCertificate.elements.map((el) =>
-      el.id === dragging.id ? { ...el, x, y } : el
-    );
-  };
-
-  const handleMouseUp = () => setDragging(null);
+  const scale = zoom / 100;
 
   return (
-    <div
-      className="h-screen w-full bg-slate-900 flex flex-col"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      <EditorTopBar activeToolTab={activeToolTab} setActiveToolTab={setActiveToolTab} />
+    <div className="h-screen w-full bg-slate-900 flex flex-col">
+      <EditorTopBar
+        activeToolTab={activeToolTab}
+        setActiveToolTab={setActiveToolTab}
+        selectedElement={selectedElement}
+        onTextStyleChange={handleTextStyleChange}
+        onDeleteElement={handleDeleteElement}
+      />
 
       <div
         id="certificate-container"
-        className="flex-1 overflow-auto bg-slate-900 flex justify-center items-start transition-all duration-300"
+        className="flex-1 overflow-auto bg-slate-900 flex justify-center items-start transition-all duration-300 p-10"
         style={{ marginRight: `${rightSidebarWidth}px` }}
       >
         <div
-          className="inline-block mt-2"
           style={{
             transform: `scale(${scale})`,
             transformOrigin: "top center",
             transition: "transform 0.15s ease",
           }}
         >
-          <div ref={layoutRef}>
-            <CertificateLayout size={currentCertificate.size}>
-              <div className="relative w-full h-full bg-white shadow-lg overflow-hidden">
-               
-
-                {currentCertificate.layers?.map((layer) => (
-                  <div
-                    key={layer.id}
-                    className={`absolute cursor-move ${
-                      activeElement === layer.id ? "ring-2 ring-cyan-400" : ""
-                    }`}
-                    style={{
-                      left: `${layer.x}px`,
-                      top: `${layer.y}px`,
-                      width: `${layer.width}px`,
-                      height: `${layer.height}px`,
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveElement(layer.id);
-                    }}
-                    onMouseDown={(e) => handleMouseDown(e, layer)}
-                  >
-                    <img
-                      src={layer.src}
-                      alt={layer.id}
-                      className="w-full h-full object-contain pointer-events-none"
-                    />
-                  </div>
-                ))}
-
-                {currentCertificate.elements?.map((el) => (
-                  <div
-                    key={el.id}
-                    className={`absolute cursor-move ${
-                      activeElement === el.id ? "ring-2 ring-cyan-400" : ""
-                    }`}
-                    style={{
-                      left: `${el.x}px`,
-                      top: `${el.y}px`,
-                      fontSize: `${el.fontSize || 16}px`,
-                      fontFamily: el.fontFamily,
-                      color: el.color,
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveElement(el.id);
-                    }}
-                    onMouseDown={(e) => handleMouseDown(e, el)}
-                  >
-                    {el.content}
-                  </div>
-                ))}
-              </div>
-            </CertificateLayout>
-          </div>
+          <FabricCanvas
+            width={currentCertificate.width}
+            height={currentCertificate.height}
+            elements={currentCertificate.elements}
+            onElementSelect={handleElementSelect}
+            onElementUpdate={handleElementUpdate}
+          />
         </div>
       </div>
 

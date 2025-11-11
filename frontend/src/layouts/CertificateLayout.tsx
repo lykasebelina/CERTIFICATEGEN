@@ -1,5 +1,3 @@
-//CertificateLayout.tsx
-
 import React from "react";
 
 export interface CertificateLayoutProps {

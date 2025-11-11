@@ -34,7 +34,6 @@ const EditorDropdownSidebar: React.FC<EditorDropdownSidebarProps> = ({ onWidthCh
   return (
     <div className="fixed top-[88px] right-[calc(1.5rem+var(--scrollbar-width,16px))] z-50 flex flex-col items-center pointer-events-none">
       <div className="relative flex flex-col items-center pointer-events-auto">
-        {/* Toggle button */}
         <button
           onClick={toggleMenu}
           className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center transition-all shadow-xl hover:scale-110 hover:shadow-blue-500/50"
@@ -42,7 +41,6 @@ const EditorDropdownSidebar: React.FC<EditorDropdownSidebarProps> = ({ onWidthCh
           <Sparkles size={22} />
         </button>
 
-        {/* Dropdown (centered below toggle) */}
         {isMenuOpen && (
           <div className="absolute left-1/2 -translate-x-1/2 top-14 bg-gradient-to-b from-blue-600 via-blue-700 to-purple-700 rounded-2xl shadow-xl overflow-hidden w-28 animate-in fade-in slide-in-from-top-2 duration-200">
             {sidebarItems.map((item, index) => (

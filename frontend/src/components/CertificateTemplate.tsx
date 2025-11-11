@@ -1,5 +1,3 @@
-// CertificateTemplate.tsx
-
 import { CertificateElement } from "../types/certificate";
 
 interface CertificateTemplateProps {
@@ -83,7 +81,7 @@ export default function CertificateTemplate({
             ...baseStyle,
             fontSize: element.fontSize ? `${element.fontSize}px` : "14px",
             fontWeight: element.fontWeight ?? "normal",
-            textAlign: element.textAlign ?? "center",
+            textAlign: (element.textAlign as "left" | "center" | "right") ?? "center",
             color: element.color ?? "#000000",
             whiteSpace: "pre-line",
             lineHeight: element.type === "signature" ? "1.4" : "1.6",

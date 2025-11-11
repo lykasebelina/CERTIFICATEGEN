@@ -1,5 +1,3 @@
-// certificate.ts file
-
 export interface CertificateElement {
   id: string;
   type:
