@@ -20,9 +20,11 @@ const SIZE_MAP: Record<string, CertificateSize> = {
   "letter-landscape": { width: 1056, height: 816 },
 };
 
-/* 🔍 Smarter background type detection */
-function detectBackgroundType(prompt: string): "plain" | "textured" {
+/* 🔍 Detect background type */
+function detectBackgroundType(prompt: string): "plain" | "textured" | "gradient" {
   const lower = prompt.toLowerCase();
+
+  if (lower.includes("gradient")) return "gradient";
 
   const textureHints = [
     "texture", "paper", "grain", "fabric", "canvas", "pattern",
@@ -37,58 +39,80 @@ function detectBackgroundType(prompt: string): "plain" | "textured" {
 
   if (textureHints.some((w) => lower.includes(w))) return "textured";
   if (plainHints.some((w) => lower.includes(w))) return "plain";
-  return "textured"; // default to textured if ambiguous
+  return "textured";
 }
 
-/* 🎨 Helper to extract a color if user asks for one */
-function extractColor(prompt: string): string {
-  const colorMap: Record<string, string> = {
-    white: "#ffffff",
-    black: "#000000",
-    gray: "#cccccc",
-    grey: "#cccccc",
-    blue: "#a7c7e7",
-    red: "#f28b82",
-    green: "#b7e1a1",
-    beige: "#f5f5dc",
-    ivory: "#fffff0",
-    cream: "#fffdd0",
-    gold: "#ffd700",
-    silver: "#c0c0c0",
-    yellow: "#fff59d",
-    brown: "#d7ccc8",
-  };
-  const lowerPrompt = prompt.toLowerCase();
-  for (const [name, hex] of Object.entries(colorMap)) {
-    if (lowerPrompt.includes(name)) return hex;
+/* 🎨 Universal color extractor */
+function extractColors(prompt: string): string[] {
+  const lower = prompt.toLowerCase().trim();
+
+  const hexMatches = lower.match(/#([0-9a-f]{3,6})\b/gi);
+  if (hexMatches?.length) return hexMatches;
+
+  const rgbMatches = lower.match(/(rgb|hsl)\([^)]*\)/gi);
+  if (rgbMatches?.length) return rgbMatches;
+
+  const colorWords = lower.match(/\b[a-z]+\b/g) || [];
+  const validColors = colorWords.filter(isColorValid);
+
+  return validColors.slice(0, 2).length > 0 ? validColors.slice(0, 2) : ["#f9f9f9"];
+}
+
+/* ✅ Cross-environment color validation (no require) */
+function isColorValid(color: string): boolean {
+  if (typeof window !== "undefined") {
+    const s = new Option().style;
+    s.color = color;
+    return s.color !== "";
   }
-  return "#f9f9f9";
+  const cssColors = [
+    "red", "green", "blue", "yellow", "purple", "orange", "pink", "brown", "black", "white", "gray", "grey",
+    "teal", "navy", "lime", "aqua", "maroon", "olive", "silver", "gold", "beige", "ivory", "violet", "indigo",
+  ];
+  return cssColors.includes(color.toLowerCase());
 }
 
-/* 🧠 Build background prompt for DALL·E */
-function formatBackgroundPrompt(userPrompt: string, canvasSize: CertificateSize): string {
-  const safePrompt = userPrompt
-    .replace(/certificate|border|frame|award|design/gi, "")
-    .trim();
+/* 🧭 Gradient helpers */
+function detectGradientDirection(prompt: string): string {
+  const lower = prompt.toLowerCase();
+  if (lower.includes("vertical")) return "to bottom";
+  if (lower.includes("horizontal")) return "to right";
+  if (lower.includes("diagonal")) return "to bottom right";
+  if (lower.includes("radial")) return "circle";
+  if (lower.includes("top")) return "to bottom";
+  if (lower.includes("bottom")) return "to top";
+  if (lower.includes("left")) return "to right";
+  if (lower.includes("right")) return "to left";
+  return "to right";
+}
 
+/* 🎚 Detect gradient intensity (now used!) */
+function detectGradientIntensity(prompt: string): number {
+  const lower = prompt.toLowerCase();
+  if (lower.includes("subtle") || lower.includes("soft")) return 0.15;
+  if (lower.includes("moderate") || lower.includes("medium")) return 0.35;
+  if (lower.includes("strong") || lower.includes("intense") || lower.includes("deep")) return 0.6;
+  return 0.3;
+}
+
+/* 🧠 Build DALL·E prompt */
+function formatBackgroundPrompt(userPrompt: string, canvasSize: CertificateSize): string {
+  const safePrompt = userPrompt.replace(/certificate|border|frame|award|design/gi, "").trim();
   return `
 A flat digital ${safePrompt}.
 Design focus: professional minimalist certificate paper texture background.
 Rules:
 - Digital texture, not a photo of paper
-- Perfectly even lighting across entire image
-- No edges, corners, folds, shadows, or vignette effects
-- No borders or frames
+- Perfectly even lighting
+- No edges, folds, or borders
 - Subtle fine paper or linen texture only
-- Light, uniform tone (ivory, pearl, pale gray, or pastel)
-- Smooth matte finish, no glare or gloss
-- Looks like a scanned flat paper texture
-Negative prompt: photo realism, shadows, borders, light falloff, folds, wrinkles
+- Light, uniform tone
+Negative prompt: photo realism, shadows, wrinkles
 Size: ${canvasSize.width}x${canvasSize.height}px
 `;
 }
 
-/* 🧩 Determine DALL·E image size */
+/* 📐 Choose image size */
 function determineImageSize(
   width: number,
   height: number
@@ -99,7 +123,7 @@ function determineImageSize(
   return "1024x1024";
 }
 
-/* 🖼 Generate image with DALL·E 3 */
+/* 🖼 Generate with DALL·E */
 async function generateImageWithDALLE(
   prompt: string,
   size: "1024x1024" | "1792x1024" | "1024x1792" = "1024x1024"
@@ -113,17 +137,14 @@ async function generateImageWithDALLE(
       quality: "standard",
       style: "natural",
     });
-
-    const url = response?.data?.[0]?.url ?? "";
-    if (!url) console.warn("⚠️ No image URL returned from DALL·E");
-    return url;
+    return response?.data?.[0]?.url ?? "";
   } catch (error) {
-    console.error("❌ Error generating image with DALL·E:", error);
+    console.error("❌ Error generating image:", error);
     throw error;
   }
 }
 
-/* 🚀 Main function to generate certificate background */
+/* 🚀 Main function */
 export async function generateCertificateElements(
   userPrompt: string,
   selectedSize: string = "a4-landscape"
@@ -133,9 +154,34 @@ export async function generateCertificateElements(
 
   const backgroundType = detectBackgroundType(userPrompt);
 
-  if (backgroundType === "plain") {
-    console.log("🎨 Generating plain color background...");
-    const color = extractColor(userPrompt);
+  if (backgroundType === "plain" || backgroundType === "gradient") {
+    console.log("🎨 Generating color or gradient background...");
+    const colors = extractColors(userPrompt);
+    const direction = detectGradientDirection(userPrompt);
+    const intensity = detectGradientIntensity(userPrompt); // ✅ now used
+
+    // Slightly adjust color brightness for "intensity" feel
+    const adjustColor = (color: string, amount: number) => {
+      const el = document.createElement("div");
+      el.style.color = color;
+      document.body.appendChild(el);
+      const rgb = getComputedStyle(el).color.match(/\d+/g)?.map(Number) || [255, 255, 255];
+      document.body.removeChild(el);
+      const [r, g, b] = rgb.map((v) => Math.max(0, Math.min(255, v + (255 - v) * amount)));
+      return `rgb(${r}, ${g}, ${b})`;
+    };
+
+    const adjustedColors =
+      backgroundType === "gradient" && colors.length > 1
+        ? [adjustColor(colors[0], intensity / 2), adjustColor(colors[1], -intensity / 2)]
+        : colors;
+
+    const style =
+      backgroundType === "gradient" && adjustedColors.length > 1
+        ? direction === "circle"
+          ? `radial-gradient(${adjustedColors[0]}, ${adjustedColors[1]})`
+          : `linear-gradient(${direction}, ${adjustedColors[0]}, ${adjustedColors[1]})`
+        : undefined;
 
     elements.push({
       id: `background-${Date.now()}`,
@@ -146,10 +192,11 @@ export async function generateCertificateElements(
       height: canvasSize.height,
       zIndex: 1,
       opacity: 1,
-      backgroundColor: color,
+      backgroundColor: backgroundType === "plain" ? colors[0] : undefined,
+      imageUrl: backgroundType === "gradient" ? style : undefined,
     });
 
-    console.log(`✅ Plain color background generated: ${color}`);
+    console.log(`✅ ${backgroundType} background generated`);
   } else {
     console.log("🧠 Generating textured background with DALL·E...");
     try {

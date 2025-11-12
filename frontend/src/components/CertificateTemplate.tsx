@@ -1,4 +1,4 @@
-//CertificateTemplate.tsx
+// CertificateTemplate.tsx – Element Renderer (UPDATED)
 
 import { CertificateElement } from "../types/certificate";
 
@@ -47,7 +47,29 @@ export default function CertificateTemplate({
       baseStyle.transform = "translateX(-50%)";
     }
 
-    if (element.imageUrl) {
+    // 🌈 Handle background (plain, gradient, or DALL·E image)
+    if (element.type === "background") {
+      const backgroundStyle: React.CSSProperties = {
+        ...baseStyle,
+        cursor: "default",
+      };
+
+      if (
+        element.imageUrl?.startsWith("linear-gradient") ||
+        element.imageUrl?.startsWith("radial-gradient")
+      ) {
+        // CSS gradient
+        backgroundStyle.background = element.imageUrl;
+      } else if (element.imageUrl) {
+        // Image background (DALL·E)
+        backgroundStyle.backgroundImage = `url(${element.imageUrl})`;
+        backgroundStyle.backgroundSize = "cover";
+        backgroundStyle.backgroundPosition = "center";
+      } else if (element.backgroundColor) {
+        // Plain color
+        backgroundStyle.backgroundColor = element.backgroundColor;
+      }
+
       return (
         <div
           key={element.id}
@@ -55,22 +77,12 @@ export default function CertificateTemplate({
           onDragStart={(e) => handleDragStart(e, element.id)}
           onDrag={(e) => handleDrag(e, element)}
           onClick={() => onElementSelect?.(element.id)}
-          style={baseStyle}
-        >
-          <img
-            src={element.imageUrl}
-            alt={element.type}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              pointerEvents: "none",
-            }}
-          />
-        </div>
+          style={backgroundStyle}
+        />
       );
     }
 
+    // 🖋️ Text or Signature elements
     if (element.type === "text" || element.type === "signature") {
       return (
         <div
@@ -91,23 +103,6 @@ export default function CertificateTemplate({
         >
           {element.content}
         </div>
-      );
-    }
-
-    if (element.backgroundColor) {
-      return (
-        <div
-          key={element.id}
-          draggable
-          onDragStart={(e) => handleDragStart(e, element.id)}
-          onDrag={(e) => handleDrag(e, element)}
-          onClick={() => onElementSelect?.(element.id)}
-          style={{
-            ...baseStyle,
-            backgroundColor: element.backgroundColor,
-            cursor: "default",
-          }}
-        />
       );
     }
 
