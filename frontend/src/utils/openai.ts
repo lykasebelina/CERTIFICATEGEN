@@ -1,3 +1,5 @@
+//openai.ts
+
 import OpenAI from "openai";
 import { CertificateElement } from "../types/certificate";
 
@@ -20,10 +22,8 @@ const SIZE_MAP: Record<string, CertificateSize> = {
   "letter-landscape": { width: 1056, height: 816 },
 };
 
-/* 🔍 Detect background type */
 function detectBackgroundType(prompt: string): "plain" | "textured" | "gradient" {
   const lower = prompt.toLowerCase();
-
   if (lower.includes("gradient")) return "gradient";
 
   const textureHints = [
@@ -42,23 +42,38 @@ function detectBackgroundType(prompt: string): "plain" | "textured" | "gradient"
   return "textured";
 }
 
-/* 🎨 Universal color extractor */
 function extractColors(prompt: string): string[] {
   const lower = prompt.toLowerCase().trim();
-
   const hexMatches = lower.match(/#([0-9a-f]{3,6})\b/gi);
   if (hexMatches?.length) return hexMatches;
-
   const rgbMatches = lower.match(/(rgb|hsl)\([^)]*\)/gi);
   if (rgbMatches?.length) return rgbMatches;
 
-  const colorWords = lower.match(/\b[a-z]+\b/g) || [];
-  const validColors = colorWords.filter(isColorValid);
+  const cleaned = lower
+    .replace(/\b(pastel|soft|light|pale|bright|vivid|muted|dark|deep|rich|warm|cool|dusty|sky|cream|peach)\b/g, "")
+    .trim();
+  const words = cleaned.match(/\b[a-z]+\b/g) || [];
+  const validColors = words.filter(isColorValid);
 
-  return validColors.slice(0, 2).length > 0 ? validColors.slice(0, 2) : ["#f9f9f9"];
+  const phraseMap: Record<string, string> = {
+    "sky blue": "#87ceeb",
+    "pastel blue": "#aec6cf",
+    "pastel pink": "#ffd1dc",
+    "pastel green": "#77dd77",
+    "pastel peach": "#ffdab9",
+    "pastel cream": "#fffdd0",
+    "peach": "#ffdab9",
+    "cream": "#fffdd0",
+  };
+
+  const phraseMatches = Object.entries(phraseMap)
+    .filter(([phrase]) => lower.includes(phrase))
+    .map(([, hex]) => hex);
+
+  const allColors = [...phraseMatches, ...validColors];
+  return allColors.slice(0, 2).length > 0 ? allColors.slice(0, 2) : ["#f9f9f9"];
 }
 
-/* ✅ Cross-environment color validation (no require) */
 function isColorValid(color: string): boolean {
   if (typeof window !== "undefined") {
     const s = new Option().style;
@@ -66,13 +81,15 @@ function isColorValid(color: string): boolean {
     return s.color !== "";
   }
   const cssColors = [
-    "red", "green", "blue", "yellow", "purple", "orange", "pink", "brown", "black", "white", "gray", "grey",
-    "teal", "navy", "lime", "aqua", "maroon", "olive", "silver", "gold", "beige", "ivory", "violet", "indigo",
+    "red", "green", "blue", "yellow", "purple", "orange", "pink", "brown",
+    "black", "white", "gray", "grey", "teal", "navy", "lime", "aqua",
+    "maroon", "olive", "silver", "gold", "beige", "ivory", "violet",
+    "indigo", "peachpuff", "skyblue", "coral", "salmon", "plum",
+    "khaki", "lavender"
   ];
   return cssColors.includes(color.toLowerCase());
 }
 
-/* 🧭 Gradient helpers */
 function detectGradientDirection(prompt: string): string {
   const lower = prompt.toLowerCase();
   if (lower.includes("vertical")) return "to bottom";
@@ -86,7 +103,6 @@ function detectGradientDirection(prompt: string): string {
   return "to right";
 }
 
-/* 🎚 Detect gradient intensity (now used!) */
 function detectGradientIntensity(prompt: string): number {
   const lower = prompt.toLowerCase();
   if (lower.includes("subtle") || lower.includes("soft")) return 0.15;
@@ -95,7 +111,6 @@ function detectGradientIntensity(prompt: string): number {
   return 0.3;
 }
 
-/* 🧠 Build DALL·E prompt */
 function formatBackgroundPrompt(userPrompt: string, canvasSize: CertificateSize): string {
   const safePrompt = userPrompt.replace(/certificate|border|frame|award|design/gi, "").trim();
   return `
@@ -112,22 +127,14 @@ Size: ${canvasSize.width}x${canvasSize.height}px
 `;
 }
 
-/* 📐 Choose image size */
-function determineImageSize(
-  width: number,
-  height: number
-): "1024x1024" | "1792x1024" | "1024x1792" {
+function determineImageSize(width: number, height: number): "1024x1024" | "1792x1024" | "1024x1792" {
   const aspectRatio = width / height;
   if (aspectRatio > 1.5) return "1792x1024";
   if (aspectRatio < 0.7) return "1024x1792";
   return "1024x1024";
 }
 
-/* 🖼 Generate with DALL·E */
-async function generateImageWithDALLE(
-  prompt: string,
-  size: "1024x1024" | "1792x1024" | "1024x1792" = "1024x1024"
-): Promise<string> {
+async function generateImageWithDALLE(prompt: string, size: "1024x1024" | "1792x1024" | "1024x1792" = "1024x1024"): Promise<string> {
   try {
     const response = await openai.images.generate({
       model: "dall-e-3",
@@ -144,23 +151,50 @@ async function generateImageWithDALLE(
   }
 }
 
-/* 🚀 Main function */
 export async function generateCertificateElements(
   userPrompt: string,
   selectedSize: string = "a4-landscape"
 ): Promise<CertificateElement[]> {
   const canvasSize = SIZE_MAP[selectedSize] || SIZE_MAP["a4-landscape"];
   const elements: CertificateElement[] = [];
-
   const backgroundType = detectBackgroundType(userPrompt);
 
   if (backgroundType === "plain" || backgroundType === "gradient") {
     console.log("🎨 Generating color or gradient background...");
-    const colors = extractColors(userPrompt);
+    const baseColors = extractColors(userPrompt);
     const direction = detectGradientDirection(userPrompt);
-    const intensity = detectGradientIntensity(userPrompt); // ✅ now used
+    const intensity = detectGradientIntensity(userPrompt);
 
-    // Slightly adjust color brightness for "intensity" feel
+    const lowerPrompt = userPrompt.toLowerCase();
+    const isDark = /\bdark|deep|rich\b/.test(lowerPrompt);
+    const isLight = /\blight|pale|soft|pastel\b/.test(lowerPrompt);
+
+    const adjustBaseColor = (color: string): string => {
+      const el = document.createElement("div");
+      el.style.color = color;
+      document.body.appendChild(el);
+      const rgb = getComputedStyle(el).color.match(/\d+/g)?.map(Number) || [255, 255, 255];
+      document.body.removeChild(el);
+
+      let [r, g, b] = rgb;
+
+      if (isDark) {
+        // Darken: move closer to black
+        r *= 0.7;
+        g *= 0.7;
+        b *= 0.7;
+      } else if (isLight) {
+        // Lighten: blend toward white
+        r = r + (255 - r) * 0.4;
+        g = g + (255 - g) * 0.4;
+        b = b + (255 - b) * 0.4;
+      }
+
+      return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+    };
+
+    const colors = baseColors.map(adjustBaseColor);
+
     const adjustColor = (color: string, amount: number) => {
       const el = document.createElement("div");
       el.style.color = color;
@@ -171,16 +205,26 @@ export async function generateCertificateElements(
       return `rgb(${r}, ${g}, ${b})`;
     };
 
-    const adjustedColors =
-      backgroundType === "gradient" && colors.length > 1
-        ? [adjustColor(colors[0], intensity / 2), adjustColor(colors[1], -intensity / 2)]
-        : colors;
+    let gradientColors = colors;
+    if (backgroundType === "gradient") {
+      if (gradientColors.length === 1) {
+        gradientColors = [
+          adjustColor(gradientColors[0], -0.1),
+          adjustColor(gradientColors[0], 0.3),
+        ];
+      } else if (gradientColors.length > 1) {
+        gradientColors = [
+          adjustColor(gradientColors[0], intensity / 2),
+          adjustColor(gradientColors[1], -intensity / 2),
+        ];
+      }
+    }
 
     const style =
-      backgroundType === "gradient" && adjustedColors.length > 1
+      backgroundType === "gradient"
         ? direction === "circle"
-          ? `radial-gradient(${adjustedColors[0]}, ${adjustedColors[1]})`
-          : `linear-gradient(${direction}, ${adjustedColors[0]}, ${adjustedColors[1]})`
+          ? `radial-gradient(${gradientColors[0]}, ${gradientColors[1]})`
+          : `linear-gradient(${direction}, ${gradientColors[0]}, ${gradientColors[1]})`
         : undefined;
 
     elements.push({

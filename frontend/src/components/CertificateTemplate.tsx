@@ -1,4 +1,4 @@
-// CertificateTemplate.tsx – Element Renderer (UPDATED)
+// CertificateTemplate.tsx – Element Renderer 
 
 import { CertificateElement } from "../types/certificate";
 
