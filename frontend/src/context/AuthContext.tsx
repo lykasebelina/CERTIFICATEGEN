@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Keep session synced when switching tabs or refocusing
   useEffect(() => {
     const syncSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -34,7 +33,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  // 🧩 Handle Supabase password recovery flow
   useEffect(() => {
     const handleRecovery = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -43,16 +41,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const refreshToken = hashParams.get("refresh_token");
 
       if (type === "recovery" && accessToken && refreshToken) {
-        // Mark this tab as part of reset flow
         localStorage.setItem("isPasswordResetFlow", "true");
 
-        // Establish temporary session
         await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
         });
 
-        // Redirect to password reset page
         window.location.replace("/reset-password");
       }
     };
@@ -60,7 +55,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     handleRecovery();
   }, []);
 
-  // 🧠 Initialize and listen for session changes
   useEffect(() => {
     const initSession = async () => {
       const { data, error } = await supabase.auth.getSession();
@@ -75,16 +69,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
 
-      // 🧹 Clean up reset flow after successful password change
       if (session && localStorage.getItem("isPasswordResetFlow")) {
         localStorage.removeItem("isPasswordResetFlow");
       }
 
-      // Notify other tabs to sync
       localStorage.setItem("auth-update", Date.now().toString());
     });
 
-    // 📡 Sync session across tabs
     const handleStorageChange = async (event: StorageEvent) => {
       if (
         event.key?.endsWith("-auth-token") ||

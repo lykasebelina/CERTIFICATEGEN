@@ -5,7 +5,7 @@ import { useCertificate } from "../../context/CertificateContext";
 import EditorTopBar from "../../components/EditorTopBar";
 import EditorBottomBar from "../../components/EditorBottomBar";
 import EditorDropdownSidebar from "../../components/EditorDropdownSidebar";
-import FabricCanvas from "../../components/FabricCanvas";
+import KonvaCanvas from "../../components/KonvaCanvas";
 
 const CertificateEditor: React.FC = () => {
   const navigate = useNavigate();
@@ -102,7 +102,7 @@ const CertificateEditor: React.FC = () => {
             transition: "transform 0.15s ease",
           }}
         >
-          <FabricCanvas
+          <KonvaCanvas
             width={currentCertificate.width}
             height={currentCertificate.height}
             elements={currentCertificate.elements}

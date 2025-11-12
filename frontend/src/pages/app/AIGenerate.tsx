@@ -1,3 +1,5 @@
+//AIGenerate.tsx
+
 import { useState } from "react";
 import { Lightbulb, Palette, Plus, Layout, Sparkles } from "lucide-react";
 import CertificatePreview from "../../components/CertificatePreview";
@@ -5,6 +7,9 @@ import { useCertificate } from "../../context/CertificateContext";
 import { generateCertificateElements } from "../../utils/openai";
 import { CertificateElement } from "../../types/certificate";
 import { useNavigate } from "react-router-dom";
+
+console.log("Plain background detected — using solid color fill instead of AI image");
+
 
 type CertificateSize =
   | "a4-portrait"

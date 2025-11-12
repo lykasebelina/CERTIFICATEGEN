@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { CertificateProvider } from "./context/CertificateContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -42,6 +42,7 @@ function App() {
   );
 
   return (
+    
     <AuthProvider>
       <CertificateProvider>
         <Routes>

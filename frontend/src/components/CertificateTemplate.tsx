@@ -1,3 +1,5 @@
+//CertificateTemplate.tsx
+
 import { CertificateElement } from "../types/certificate";
 
 interface CertificateTemplateProps {

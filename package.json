@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "fabric": "^6.9.0"
+    "fabric": "^6.9.0",
+    "konva": "^10.0.8",
+    "react-konva": "^19.2.0"
   },
   "devDependencies": {
     "@types/fabric": "^5.3.10"

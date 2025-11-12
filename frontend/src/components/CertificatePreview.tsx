@@ -1,3 +1,6 @@
+//CertificatePreview.tsx
+
+
 import { useState, useRef } from "react";
 import { Share2, Sparkles, ZoomIn, ZoomOut } from "lucide-react";
 import CertificateLayout from "../layouts/CertificateLayout";
