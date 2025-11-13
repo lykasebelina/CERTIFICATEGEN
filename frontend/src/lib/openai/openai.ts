@@ -1,10 +1,11 @@
-// src/lib/openai/openai.ts 
+// src/lib/openai/openai.ts
 import { generateBackground } from "./generators/backgroundGenerator";
 import { generateBorder } from "./generators/borderGenerator";
+import { generateTextElements } from "./generators/textGenerator";
 import { CertificateElement } from "../../types/certificate";
 
 /**
- * Generates all visual layers (background + border) for a certificate,
+ * Generates all visual layers (background, border, and text elements) for a certificate,
  * based on a natural language user prompt.
  */
 export async function generateCertificateElements(
@@ -29,6 +30,12 @@ export async function generateCertificateElements(
     const borderElements = await generateBorder(userPrompt, selectedSize);
     elements.push(...borderElements);
     console.log("✅ Border generation complete.");
+
+    // 3️⃣ Text elements generation
+    console.log("📝 Step 3: Generating text elements...");
+    const textElements = await generateTextElements(userPrompt, selectedSize);
+    elements.push(...textElements);
+    console.log("✅ Text elements generation complete.");
 
   } catch (error) {
     console.error("❌ Error while generating certificate elements:", error);
