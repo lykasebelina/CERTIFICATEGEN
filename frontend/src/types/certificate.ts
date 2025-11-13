@@ -1,4 +1,4 @@
-//certficate.ts
+// src/lib/types/certificate.ts
 
 export interface CertificateElement {
   id: string;
@@ -16,23 +16,34 @@ export interface CertificateElement {
     | "backgroundPattern"
     | "margin"
     | "frameElements";
+
+  // --- Common fields ---
   content?: string;
   x: number;
   y: number;
   zIndex?: number;
   width?: number;
   height?: number;
+  opacity?: number;
+
+  // --- Text styling ---
   fontSize?: number;
   fontFamily?: string;
   color?: string;
   bold?: boolean;
   italic?: boolean;
   align?: "left" | "center" | "right";
-  imageUrl?: string;
-  opacity?: number;
   fontWeight?: string;
   textAlign?: string;
+
+  // --- Visuals / Backgrounds ---
+  imageUrl?: string; // background images, border textures, decorative patterns
   backgroundColor?: string;
+
+  // --- 🟨 Border-specific additions ---
+  borderColor?: string;
+  borderWidth?: number;
+  borderStyle?: "solid" | "dashed" | "dotted" | "double" | "groove" | "ridge" | "none";
 }
 
 export type CertificateSize =

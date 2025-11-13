@@ -1,5 +1,4 @@
-// CertificateTemplate.tsx – Element Renderer 
-
+// CertificateTemplate.tsx – Element Renderer
 import { CertificateElement } from "../types/certificate";
 
 interface CertificateTemplateProps {
@@ -47,7 +46,7 @@ export default function CertificateTemplate({
       baseStyle.transform = "translateX(-50%)";
     }
 
-    // 🌈 Handle background (plain, gradient, or DALL·E image)
+    // 🌈 BACKGROUND
     if (element.type === "background") {
       const backgroundStyle: React.CSSProperties = {
         ...baseStyle,
@@ -58,15 +57,12 @@ export default function CertificateTemplate({
         element.imageUrl?.startsWith("linear-gradient") ||
         element.imageUrl?.startsWith("radial-gradient")
       ) {
-        // CSS gradient
         backgroundStyle.background = element.imageUrl;
       } else if (element.imageUrl) {
-        // Image background (DALL·E)
         backgroundStyle.backgroundImage = `url(${element.imageUrl})`;
         backgroundStyle.backgroundSize = "cover";
         backgroundStyle.backgroundPosition = "center";
       } else if (element.backgroundColor) {
-        // Plain color
         backgroundStyle.backgroundColor = element.backgroundColor;
       }
 
@@ -82,7 +78,28 @@ export default function CertificateTemplate({
       );
     }
 
-    // 🖋️ Text or Signature elements
+    // 🟦 BORDER
+    if (element.type === "border") {
+      const borderStyle: React.CSSProperties = {
+        ...baseStyle,
+        pointerEvents: "none", // prevents interfering with dragging text
+      };
+
+      if (element.imageUrl) {
+        // Ornate (DALL·E) border image
+        borderStyle.backgroundImage = `url(${element.imageUrl})`;
+        borderStyle.backgroundSize = "cover";
+        borderStyle.backgroundPosition = "center";
+      } else if (element.content) {
+        // Simple CSS border
+        borderStyle.border = element.content; // e.g. "4px solid #d4af37"
+        borderStyle.boxSizing = "border-box";
+      }
+
+      return <div key={element.id} style={borderStyle} />;
+    }
+
+    // 🖋️ TEXT / SIGNATURE
     if (element.type === "text" || element.type === "signature") {
       return (
         <div
@@ -118,7 +135,7 @@ export default function CertificateTemplate({
   }
 
   return (
-    <div className="w-full h-full relative bg-white">
+    <div className="w-full h-full relative bg-white overflow-hidden rounded-0 shadow-md">
       {elements
         .sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0))
         .map((element) => renderElement(element))}

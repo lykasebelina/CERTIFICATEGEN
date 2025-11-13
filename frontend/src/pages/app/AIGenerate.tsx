@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Lightbulb, Palette, Plus, Layout, Sparkles } from "lucide-react";
 import CertificatePreview from "../../components/CertificatePreview";
 import { useCertificate } from "../../context/CertificateContext";
-import { generateCertificateElements } from "../../utils/openai";
+import { generateCertificateElements } from "../../lib/openai/openai";
 import { CertificateElement } from "../../types/certificate";
 import { useNavigate } from "react-router-dom";
 
@@ -58,7 +58,7 @@ function AIGenerate() {
     const certificate = createCertificateFromPreview(selectedSize, prompt);
     certificate.elements = generatedElements;
     setCurrentCertificate(certificate);
-    navigate("/editor");
+    navigate("/certificate-editor");
   };
 
   if (isGenerating) {
