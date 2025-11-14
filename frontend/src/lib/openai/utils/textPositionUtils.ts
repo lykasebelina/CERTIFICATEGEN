@@ -13,60 +13,75 @@ export function calculateTextPosition(
   existingElementCount: number
 ): TextPosition {
   const centerX = canvasSize.width / 2;
-  const margin = 80;
-  const maxWidth = canvasSize.width - margin * 2;
+
+  const safeZone = calculateSafeZone(canvasSize);
+  const marginX = safeZone.left;
+  const marginY = safeZone.top;
+
+  const maxWidth = canvasSize.width - marginX * 2;
+  const usableHeight = canvasSize.height - marginY * 2;
 
   const positions: Record<string, TextPosition> = {
     title: {
       x: centerX,
-      y: canvasSize.height * 0.2,
-      width: maxWidth,
+      y: marginY + usableHeight * 0.15,
+      width: maxWidth * 0.9,
       height: 80,
     },
     subtitle: {
       x: centerX,
-      y: canvasSize.height * 0.35,
+      y: marginY + usableHeight * 0.30,
       width: maxWidth * 0.8,
       height: 40,
     },
     recipient: {
       x: centerX,
-      y: canvasSize.height * 0.48,
+      y: marginY + usableHeight * 0.45,
       width: maxWidth * 0.7,
       height: 60,
     },
     body: {
       x: centerX,
-      y: canvasSize.height * 0.62,
+      y: marginY + usableHeight * 0.62,
       width: maxWidth * 0.85,
       height: 100,
     },
     date: {
       x: centerX,
-      y: canvasSize.height * 0.8,
+      y: marginY + usableHeight * 0.80,
       width: maxWidth * 0.4,
       height: 30,
     },
     signature: {
       x: centerX,
-      y: canvasSize.height * 0.88,
+      y: marginY + usableHeight * 0.90,
       width: maxWidth * 0.5,
       height: 60,
     },
     footer: {
       x: centerX,
-      y: canvasSize.height * 0.93,
+      y: canvasSize.height - marginY - 30,
       width: maxWidth,
       height: 30,
     },
   };
 
-  return positions[elementType] || {
+  const position = positions[elementType] || {
     x: centerX,
-    y: canvasSize.height * 0.5 + existingElementCount * 50,
+    y: marginY + usableHeight * 0.5 + existingElementCount * 50,
     width: maxWidth * 0.6,
     height: 40,
   };
+
+  if (position.y + (position.height || 0) > canvasSize.height - marginY) {
+    position.y = canvasSize.height - marginY - (position.height || 40);
+  }
+
+  if (position.y < marginY) {
+    position.y = marginY;
+  }
+
+  return position;
 }
 
 export function adjustPositionForOrientation(

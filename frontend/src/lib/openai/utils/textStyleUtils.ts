@@ -156,3 +156,72 @@ export function detectFontFamily(prompt: string): string {
 
   return "Arial, sans-serif";
 }
+
+interface TextStyle {
+  fontSize: number;
+  fontFamily: string;
+  fontWeight: string;
+  color: string;
+  textAlign: string;
+}
+
+export function generateTextStyleFromPrompt(
+  elementType: string,
+  userPrompt: string
+): TextStyle {
+  const lower = userPrompt.toLowerCase();
+
+  const fontSizeMap: Record<string, number> = {
+    title: 48,
+    subtitle: 20,
+    recipient: 36,
+    body: 16,
+    date: 14,
+    signature: 14,
+    footer: 12,
+  };
+
+  let fontSize = fontSizeMap[elementType] || 16;
+
+  if (lower.includes("large text") || lower.includes("big")) {
+    fontSize = Math.round(fontSize * 1.3);
+  } else if (lower.includes("small text")) {
+    fontSize = Math.round(fontSize * 0.8);
+  }
+
+  const fontFamily = detectFontFamily(userPrompt);
+  const textAlign = detectTextAlignment(userPrompt);
+
+  let fontWeight = "normal";
+  if (elementType === "title" || elementType === "recipient") {
+    fontWeight = "bold";
+  }
+  if (lower.includes("bold") || lower.includes("thick")) {
+    fontWeight = "bold";
+  }
+
+  let color = "#000000";
+  const colorMatch = lower.match(/\b(gold|golden|silver|navy|red|blue|green|white|black)\b/);
+  if (colorMatch) {
+    const colorMap: Record<string, string> = {
+      gold: "#D4AF37",
+      golden: "#D4AF37",
+      silver: "#C0C0C0",
+      navy: "#000080",
+      red: "#CC0000",
+      blue: "#0000CC",
+      green: "#008000",
+      white: "#FFFFFF",
+      black: "#000000",
+    };
+    color = colorMap[colorMatch[0]] || "#000000";
+  }
+
+  return {
+    fontSize,
+    fontFamily,
+    fontWeight,
+    color,
+    textAlign,
+  };
+}
