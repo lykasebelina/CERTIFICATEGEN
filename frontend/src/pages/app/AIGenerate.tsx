@@ -501,7 +501,7 @@ function AIGenerate() {
                   </div>
                 </div>
 
-                {/* Existing Buttons */}
+                {/* Existing Buttons 
                 <div className="relative group">
                   <button className="p-2 rounded-md transition-colors group/icon hover:bg-slate-700">
                     <Lightbulb className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />

@@ -29,6 +29,9 @@ import {
   OLD_AI_ID_MAP
 } from "../../lib/openai/generators/textGenerator";
 
+// 🟢 NEW IMPORT: Import the Design Rules
+import { buildDesignPrompt } from "../../lib/openai/generators/designRules";
+
 
 // IMPLEMENTATION OF REAL QR CODE GENERATION
 const generateQrCodeImage = async (data: string): Promise<string> => {
@@ -290,6 +293,7 @@ const CertificateEditor: React.FC = () => {
     setSelectedElement(null);
   };
 
+  // 🟢🟢🟢 AI GENERATION LOGIC (UPDATED WITH RULES) 🟢🟢🟢
   const handleAiGenerate = async (prompt: string, applyToAll: boolean) => {
     if (!selectedElement) return;
     const activeCert = isBulkMode ? bulkGeneratedCertificates[selectedCertificateIndex!] : currentCertificate;
@@ -300,7 +304,11 @@ const CertificateEditor: React.FC = () => {
     setIsAiGenerating(true);
     try {
       const sizeStr = determineImageSize(currentCertificate!.width, currentCertificate!.height);
-      const safePrompt = `A high quality professional certificate design element, ${prompt}, abstract, soft texture, elegant style, white background`;
+      
+      // 🟢 UPDATED: USING NEW RULE GENERATOR
+      const safePrompt = buildDesignPrompt(prompt, elementToReplace);
+      console.log("🤖 AI Rule Applied:", safePrompt);
+      
       const base64Data = await generateImageWithDALLE(safePrompt, sizeStr);
       if (!base64Data) throw new Error("DALL-E returned no data");
 
