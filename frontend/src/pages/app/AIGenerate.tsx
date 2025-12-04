@@ -1,30 +1,16 @@
-<<<<<<< HEAD
-//AIGenerate.tsx
-
-import { useState } from "react";
-import { Lightbulb, Palette, Plus, Layout, Sparkles } from "lucide-react";
-=======
 //src/pages/app/AIGenerate.tsx
 
 import { useState } from "react";
 import { Lightbulb, Palette, Plus, Layout, Sparkles, X, Upload, Image as ImageIcon, FileSignature } from "lucide-react";
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 import CertificatePreview from "../../components/CertificatePreview";
 import { useCertificate } from "../../context/CertificateContext";
 import { generateCertificateElements } from "../../lib/openai/openai";
 import { CertificateElement } from "../../types/certificate";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-
-console.log("Plain background detected — using solid color fill instead of AI image");
-
-
-=======
 import { useAuth } from "../../context/AuthContext";
 
 console.log("Plain background detected — using solid color fill instead of AI image");
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 type CertificateSize =
   | "a4-portrait"
   | "a4-landscape"
@@ -33,8 +19,6 @@ type CertificateSize =
   | "letter-portrait"
   | "letter-landscape";
 
-<<<<<<< HEAD
-=======
 interface Position { x: number; y: number; }
 
 
@@ -226,17 +210,13 @@ interface UploadedAssets {
   watermark: string | null;
 }
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 function AIGenerate() {
   const navigate = useNavigate();
   const { createCertificateFromPreview, setCurrentCertificate } = useCertificate();
 
-<<<<<<< HEAD
-=======
   const { user } = useAuth();
   const firstName = user?.user_metadata?.first_name || "User";
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const [prompt, setPrompt] = useState("");
   const [showSizeMenu, setShowSizeMenu] = useState(false);
   const [selectedSize, setSelectedSize] = useState<CertificateSize>("a4-landscape");
@@ -244,8 +224,6 @@ function AIGenerate() {
   const [showPreview, setShowPreview] = useState(false);
   const [generatedElements, setGeneratedElements] = useState<CertificateElement[]>([]);
 
-<<<<<<< HEAD
-=======
 
   const [showFileModal, setShowFileModal] = useState(false);
   const [assets, setAssets] = useState<UploadedAssets>({
@@ -254,7 +232,6 @@ function AIGenerate() {
     watermark: null,
   });
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const sizes = [
     { id: "a4-portrait" as CertificateSize, label: "A4 (Portrait)" },
     { id: "a4-landscape" as CertificateSize, label: "A4 (Landscape)" },
@@ -264,8 +241,6 @@ function AIGenerate() {
     { id: "letter-landscape" as CertificateSize, label: "US Letter (Landscape)" },
   ];
 
-<<<<<<< HEAD
-=======
   const readFileAsBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -311,15 +286,10 @@ function AIGenerate() {
     });
   };
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
     try {
-<<<<<<< HEAD
-      const elements = await generateCertificateElements(prompt, selectedSize);
-      setGeneratedElements(elements);
-=======
   
       const elements = await generateCertificateElements(prompt, selectedSize);
       
@@ -451,7 +421,6 @@ function AIGenerate() {
       });
 
       setGeneratedElements(newElements);
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
       setShowPreview(true);
     } catch (error) {
       console.error("Error generating certificate:", error);
@@ -487,10 +456,7 @@ function AIGenerate() {
       <CertificatePreview
         size={selectedSize}
         prompt={prompt}
-<<<<<<< HEAD
-=======
         onPromptChange={setPrompt}
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         onBack={() => setShowPreview(false)}
         onUseTemplate={handleUseTemplate}
         onGenerate={handleGenerate}
@@ -500,19 +466,6 @@ function AIGenerate() {
   }
 
   return (
-<<<<<<< HEAD
-    <div className="h-screen flex flex-col items-center justify-center bg-slate-900 p-10">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-blue-400 mb-1">AI Certificate Generator</h1>
-          <p className="text-slate-400 text-base">Describe your design and AI will create it</p>
-        </div>
-
-        <p className="text-slate-400 text-center mb-6 text-sm">
-          Describe your certificate design and we'll generate beautiful, layered artwork using AI.
-        </p>
-
-=======
     <div className="h-screen flex flex-col items-center justify-center bg-slate-900 p-10 relative">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-6">
@@ -520,7 +473,6 @@ function AIGenerate() {
           <p className="text-slate-400 text-center mb-6 text-xl">Let's create beautiful certificates today!</p>
         </div>
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         <div className="relative mb-5 flex justify-center">
           <div className="bg-slate-800 rounded-xl p-1.5 border border-slate-700 w-full max-w-3xl">
             <div className="flex">
@@ -532,15 +484,6 @@ function AIGenerate() {
               />
 
               <div className="flex flex-col gap-2 p-2 border-l border-slate-700 relative">
-<<<<<<< HEAD
-                <div className="relative group">
-                  <button className="p-2 rounded-md transition-colors group/icon">
-                    <Plus className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
-                  </button>
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <div className="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg border border-slate-700 whitespace-nowrap">
-                      Add Files
-=======
                 
                 {/* --- ADD FILES BUTTON --- */}
                 <div className="relative group">
@@ -556,45 +499,28 @@ function AIGenerate() {
                   <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                     <div className="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg border border-slate-700 whitespace-nowrap">
                       Add Assets (Logos, Signatures)
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
                     </div>
                   </div>
                 </div>
 
-<<<<<<< HEAD
-                <div className="relative group">
-                  <button className="p-2 rounded-md transition-colors group/icon">
-                    <Lightbulb className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
-                  </button>
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-=======
                 {/* Existing Buttons 
                 <div className="relative group">
                   <button className="p-2 rounded-md transition-colors group/icon hover:bg-slate-700">
                     <Lightbulb className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
                   </button>
                   <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
                     <div className="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg border border-slate-700 whitespace-nowrap">
                       Use Predefined Prompts
                     </div>
                   </div>
                 </div>
 
-<<<<<<< HEAD
-                <div className="relative group">
-                  <button className="p-2 rounded-md transition-colors group/icon">
-                    <Palette className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
-                  </button>
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-=======
                 {/* --- BRANDKIT BUTTON (COMMENTED OUT) --- */}
                 {/* <div className="relative group">
                   <button className="p-2 rounded-md transition-colors group/icon hover:bg-slate-700">
                     <Palette className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
                   </button>
                   <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
                     <div className="bg-slate-800 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg border border-slate-700 flex items-center justify-between gap-2 whitespace-nowrap">
                       Brand Preset
                       <div className="w-9 h-5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full p-0.5">
@@ -602,20 +528,12 @@ function AIGenerate() {
                       </div>
                     </div>
                   </div>
-<<<<<<< HEAD
-                </div>
-=======
                 </div> */}
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 
                 <div className="relative">
                   <button
                     onClick={() => setShowSizeMenu(!showSizeMenu)}
-<<<<<<< HEAD
-                    className="p-2 rounded-md transition-colors group/icon"
-=======
                     className="p-2 rounded-md transition-colors group/icon hover:bg-slate-700"
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
                   >
                     <Layout className="w-4 h-4 text-slate-400 group-hover/icon:text-blue-400" />
                   </button>
@@ -646,8 +564,6 @@ function AIGenerate() {
           </div>
         </div>
 
-<<<<<<< HEAD
-=======
         {/* Display Attached Files Summary */}
         {(assets.logos.length > 0 || assets.signatures.length > 0 || assets.watermark) && (
            <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -669,7 +585,6 @@ function AIGenerate() {
            </div>
         )}
 
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         <div className="flex justify-center mb-4">
           <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-slate-300 text-xs">
             Selected Size:{" "}
@@ -690,8 +605,6 @@ function AIGenerate() {
           </button>
         </div>
       </div>
-<<<<<<< HEAD
-=======
 
       {/* --- MODAL: File Uploads --- */}
       {showFileModal && (
@@ -833,13 +746,8 @@ function AIGenerate() {
           </div>
         </div>
       )}
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
     </div>
   );
 }
 
-<<<<<<< HEAD
 export default AIGenerate;
-=======
-export default AIGenerate;
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
