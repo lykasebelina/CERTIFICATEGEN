@@ -1,3 +1,5 @@
+//src/lib/openai/generators/aiExtractor.ts
+
 export interface AIDetails {
   institution: string;
   department: string;
