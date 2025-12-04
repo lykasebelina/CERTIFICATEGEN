@@ -1,0 +1,38 @@
+{
+
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "frontend/dist" }
+    },
+
+    {
+      "src": "backend/server/index.js", 
+      "use": "@vercel/node"
+    }
+  ],
+  
+
+  "rewrites": [
+   
+    {
+      "source": "/extract", 
+      "destination": "/backend/server/index.js" 
+    },
+    {
+      "source": "/rephrase", 
+      "destination": "/backend/server/index.js" 
+    },
+    {
+      "source": "/extract-date", 
+      "destination": "/backend/server/index.js"
+    },
+    
+
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/dist/$1"
+    }
+  ]
+}
