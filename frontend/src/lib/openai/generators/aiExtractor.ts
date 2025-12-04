@@ -1,4 +1,3 @@
-// src/lib/openai/generators/aiExtractor.ts
 export interface AIDetails {
   institution: string;
   department: string;
@@ -15,12 +14,13 @@ export interface AIDetails {
 }
 
 export async function extractCertificateDetailsAI(prompt: string): Promise<AIDetails> {
-  const res = await fetch("http://localhost:4000/extract", {
+  // 🟢 FIXED: Changed hardcoded 'http://localhost:4000/extract' to relative path '/api/extract'.
+  // This assumes the backend 'ai.ts' is deployed as a Vercel Serverless Function at /api/extract.
+  const res = await fetch("/api/extract", { 
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ prompt })
   });
-
   if (!res.ok) throw new Error("Failed to extract certificate details");
   return res.json();
 }
