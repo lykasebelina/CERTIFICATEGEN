@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Lightbulb, Palette, Plus, Layout, Sparkles, X, Upload, Image as ImageIcon, FileSignature } from "lucide-react";
 import CertificatePreview from "../../components/CertificatePreview";
 import { useCertificate } from "../../context/CertificateContext";
-import { generateCertificateElements } from "../../lib/openai/openai";
+// ❌ REMOVED: import { generateCertificateElements } from "../../lib/openai/openai";
+// 🟢 ADDED: Import the correct, core generator function, which is often named 'generateCertificateDetails'
+import { generateCertificateDetails } from "../../lib/openai/generators/textGenerator"; 
 import { CertificateElement } from "../../types/certificate";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -289,7 +291,8 @@ function AIGenerate() {
     setIsGenerating(true);
     try {
   
-      const elements = await generateCertificateElements(prompt, selectedSize);
+      // 🟢 FIXED: Calling the correct function that uses the fixed AI extractor
+      const elements = await generateCertificateDetails(prompt, selectedSize); 
       
       const { width, height } = getDimensions(selectedSize); // Get dimensions here
       const newElements: CertificateElement[] = [...elements];
