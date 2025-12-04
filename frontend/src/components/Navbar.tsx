@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+<<<<<<< HEAD
 import { NavLink } from "react-router-dom";
+=======
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 import { Menu, X } from "lucide-react";
 import certigenLogo from "@/assets/certigen_logo.png";
 
@@ -11,6 +14,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onSignIn, onSignUp }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+<<<<<<< HEAD
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `px-6 py-2 rounded-full text-sm font-medium transition-all ${
       isActive
@@ -18,6 +22,8 @@ const Navbar: React.FC<NavbarProps> = ({ onSignIn, onSignUp }) => {
         : "text-white/80 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600"
     }`;
 
+=======
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const buttonClasses =
     "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-2 rounded-full text-sm font-semibold transition-all";
 
@@ -36,6 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSignIn, onSignUp }) => {
             <span className="text-white text-xl font-bold">CERTIGEN</span>
           </div>
 
+<<<<<<< HEAD
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <NavLink to="/" className={navLinkClasses}>
@@ -55,6 +62,11 @@ const Navbar: React.FC<NavbarProps> = ({ onSignIn, onSignUp }) => {
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <button onClick={onSignIn} className={navLinkClasses({ isActive: false })}>
+=======
+          {/* Desktop Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button onClick={onSignIn} className={buttonClasses}>
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
               SIGN IN
             </button>
             <button onClick={onSignUp} className={buttonClasses}>
@@ -75,6 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSignIn, onSignUp }) => {
         {isMenuOpen && (
           <div className="md:hidden mt-4 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
             <div className="flex flex-col space-y-4">
+<<<<<<< HEAD
               <NavLink to="/" className={navLinkClasses}>
                 HOME
               </NavLink>
@@ -89,6 +102,9 @@ const Navbar: React.FC<NavbarProps> = ({ onSignIn, onSignUp }) => {
               </NavLink>
               <hr className="border-white/20" />
               <button onClick={onSignIn} className={navLinkClasses({ isActive: false })}>
+=======
+              <button onClick={onSignIn} className={buttonClasses + " w-full"}>
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
                 SIGN IN
               </button>
               <button onClick={onSignUp} className={buttonClasses + " w-full"}>

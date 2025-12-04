@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
   LayoutTemplate,
+<<<<<<< HEAD
   Palette,
   FileText,
   Clock,
@@ -10,11 +11,16 @@ import {
   UserPlus,
   UserCheck,
   UserCircle,
+=======
+  FileText,
+  Clock,
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 } from "lucide-react";
 
 function HomeDashboard() {
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   // Example notifications and invites (you can later fetch from backend)
   const invites = [
     {
@@ -33,6 +39,12 @@ function HomeDashboard() {
       message: "was invited to review your branding kit.",
       time: "1d ago",
     },
+=======
+  // Mock data for activities to make them interactive
+  const activities = [
+    { id: 1, action: "You generated a certificate", time: "2:34 PM" },
+    { id: 2, action: "Exported bulk PDF files", time: "Yesterday" },
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   ];
 
   return (
@@ -52,7 +64,12 @@ function HomeDashboard() {
         <h2 className="text-lg font-semibold text-slate-300 mb-4">
           Quick Actions
         </h2>
+<<<<<<< HEAD
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+=======
+        {/* Changed grid-cols-4 to grid-cols-3 since Brand Kit is removed */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
           <button
             onClick={() => navigate("/app/studio/ai-generate")}
             className="bg-slate-800 hover:bg-slate-700 transition rounded-xl p-4 flex flex-col items-center justify-center border border-slate-700 hover:border-blue-500 group"
@@ -74,6 +91,7 @@ function HomeDashboard() {
           </button>
 
           <button
+<<<<<<< HEAD
             onClick={() => navigate("/app/studio/brand-kit")}
             className="bg-slate-800 hover:bg-slate-700 transition rounded-xl p-4 flex flex-col items-center justify-center border border-slate-700 hover:border-pink-500 group"
           >
@@ -84,6 +102,8 @@ function HomeDashboard() {
           </button>
 
           <button
+=======
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
             onClick={() => navigate("/app/studio/custom-template")}
             className="bg-slate-800 hover:bg-slate-700 transition rounded-xl p-4 flex flex-col items-center justify-center border border-slate-700 hover:border-teal-500 group"
           >
@@ -101,6 +121,7 @@ function HomeDashboard() {
           Recent Activities
         </h2>
         <div className="bg-slate-800 rounded-xl p-4 border border-slate-700 space-y-3">
+<<<<<<< HEAD
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-slate-300 text-sm">
               <Clock className="w-4 h-4 text-blue-400" /> You generated a certificate
@@ -113,6 +134,20 @@ function HomeDashboard() {
             </span>
             <span className="text-xs text-slate-500">Yesterday</span>
           </div>
+=======
+          {activities.map((activity) => (
+            <div
+              key={activity.id}
+              onClick={() => navigate("/app/activity-log")} // ADDED FUNCTIONALITY: Navigates to log
+              className="flex items-center justify-between cursor-pointer hover:bg-slate-700/50 p-2 rounded-lg transition group"
+            >
+              <span className="flex items-center gap-2 text-slate-300 text-sm group-hover:text-blue-300">
+                <Clock className="w-4 h-4 text-blue-400" /> {activity.action}
+              </span>
+              <span className="text-xs text-slate-500">{activity.time}</span>
+            </div>
+          ))}
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         </div>
       </div>
 
@@ -121,8 +156,19 @@ function HomeDashboard() {
         <h2 className="text-lg font-semibold text-slate-300 mb-4">
           Analytics Overview
         </h2>
+<<<<<<< HEAD
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 hover:border-blue-500 transition">
+=======
+        {/* Changed grid-cols-3 to grid-cols-2 since Engagement Rate is removed */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* Card 1: Certificates Created */}
+          <div 
+            onClick={() => navigate("/app/analytics/certificates")} // ADDED FUNCTIONALITY: Navigate to specific stats
+            className="bg-slate-800 p-5 rounded-xl border border-slate-700 hover:border-blue-500 cursor-pointer hover:bg-slate-750 transition"
+          >
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
             <div className="flex items-center justify-between">
               <h3 className="text-slate-400 text-sm">Certificates Created</h3>
               <FileText className="w-4 h-4 text-blue-400" />
@@ -130,7 +176,15 @@ function HomeDashboard() {
             <p className="text-2xl font-semibold text-slate-100 mt-2">48</p>
           </div>
 
+<<<<<<< HEAD
           <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 hover:border-purple-500 transition">
+=======
+          {/* Card 2: Templates Used */}
+          <div 
+             onClick={() => navigate("/app/analytics/templates")} // ADDED FUNCTIONALITY: Navigate to specific stats
+             className="bg-slate-800 p-5 rounded-xl border border-slate-700 hover:border-purple-500 cursor-pointer hover:bg-slate-750 transition"
+          >
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
             <div className="flex items-center justify-between">
               <h3 className="text-slate-400 text-sm">Templates Used</h3>
               <LayoutTemplate className="w-4 h-4 text-purple-400" />
@@ -138,6 +192,7 @@ function HomeDashboard() {
             <p className="text-2xl font-semibold text-slate-100 mt-2">17</p>
           </div>
 
+<<<<<<< HEAD
           <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 hover:border-green-500 transition">
             <div className="flex items-center justify-between">
               <h3 className="text-slate-400 text-sm">Engagement Rate</h3>
@@ -188,15 +243,25 @@ function HomeDashboard() {
               )}
             </div>
           ))}
+=======
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         </div>
       </div>
 
       {/* Footer */}
+<<<<<<< HEAD
       <div className="mt-12 text-center text-xs text-slate-500">
+=======
+      <div className="mt-auto pt-12 text-center text-xs text-slate-500">
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         © 2025 CertiGen. Empowering creativity with AI.
       </div>
     </div>
   );
 }
 
+<<<<<<< HEAD
 export default HomeDashboard;
+=======
+export default HomeDashboard;
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 //CertificateLayout.tsx
+=======
+////  src/layouts/CertificateLayout.tsx
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 
 import React from "react";
 
@@ -19,8 +23,13 @@ const SIZE_MAP: Record<
 > = {
   "a4-portrait": { width: 8.27, height: 11.69 },
   "a4-landscape": { width: 11.69, height: 8.27 },
+<<<<<<< HEAD
   "legal-portrait": { width: 8.5, height: 14 },
   "legal-landscape": { width: 14, height: 8.5 },
+=======
+  "legal-portrait": { width: 8.5, height: 13 },
+  "legal-landscape": { width: 13, height: 8.5 },
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   "letter-portrait": { width: 8.5, height: 11 },
   "letter-landscape": { width: 11, height: 8.5 },
 };

@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 // CertificateTemplate.tsx – Element Renderer
 import { CertificateElement } from "../types/certificate";
 
+=======
+import { CertificateElement } from "../types/certificate";
+
+//const showDebugFrames = true; // ← set to false to hide the outlines
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 interface CertificateTemplateProps {
   elements?: CertificateElement[];
   onElementMove?: (id: string, x: number, y: number) => void;
@@ -29,13 +36,29 @@ export default function CertificateTemplate({
     }
   };
 
+<<<<<<< HEAD
+=======
+  const clampTextForRender = (content?: string, maxChars?: number) => {
+    const c = content ?? "";
+    if (!maxChars || maxChars <= 0) return c;
+    if (c.length <= maxChars) return c;
+    if (maxChars === 1) return c.slice(0, 1);
+    return c.slice(0, maxChars - 1) + "…";
+  };
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const renderElement = (element: CertificateElement) => {
     const baseStyle: React.CSSProperties = {
       position: "absolute",
       left: `${element.x}px`,
       top: `${element.y}px`,
+<<<<<<< HEAD
       width: element.width ? `${element.width}px` : "auto",
       height: element.height ? `${element.height}px` : "auto",
+=======
+      width: element.textFrameWidth ? `${element.textFrameWidth}px` : element.width ? `${element.width}px` : "auto",
+      height: element.textFrameHeight ? `${element.textFrameHeight}px` : element.height ? `${element.height}px` : "auto",
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
       zIndex: element.zIndex ?? 1,
       opacity: element.opacity ?? 1,
       cursor: "move",
@@ -57,11 +80,19 @@ export default function CertificateTemplate({
         element.imageUrl?.startsWith("linear-gradient") ||
         element.imageUrl?.startsWith("radial-gradient")
       ) {
+<<<<<<< HEAD
         backgroundStyle.background = element.imageUrl;
       } else if (element.imageUrl) {
         backgroundStyle.backgroundImage = `url(${element.imageUrl})`;
         backgroundStyle.backgroundSize = "cover";
         backgroundStyle.backgroundPosition = "center";
+=======
+        (backgroundStyle as any).background = element.imageUrl;
+      } else if (element.imageUrl) {
+        (backgroundStyle as any).backgroundImage = `url(${element.imageUrl})`;
+        (backgroundStyle as any).backgroundSize = "cover";
+        (backgroundStyle as any).backgroundPosition = "center";
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
       } else if (element.backgroundColor) {
         backgroundStyle.backgroundColor = element.backgroundColor;
       }
@@ -78,6 +109,31 @@ export default function CertificateTemplate({
       );
     }
 
+<<<<<<< HEAD
+=======
+    // 🖼️ GENERIC IMAGE (Logos, Watermarks, User Uploads)
+    if (element.type === "image") {
+      const imageStyle: React.CSSProperties = {
+        ...baseStyle,
+        backgroundImage: `url(${element.imageUrl})`,
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      };
+      
+      return (
+        <div
+          key={element.id}
+          draggable
+          onDragStart={(e) => handleDragStart(e, element.id)}
+          onDrag={(e) => handleDrag(e, element)}
+          onClick={() => onElementSelect?.(element.id)}
+          style={imageStyle}
+        />
+      );
+    }
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
     // 🟦 BORDER
     if (element.type === "border") {
       const borderStyle: React.CSSProperties = {
@@ -86,21 +142,45 @@ export default function CertificateTemplate({
       };
 
       if (element.imageUrl) {
+<<<<<<< HEAD
         // Ornate (DALL·E) border image
+=======
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         borderStyle.backgroundImage = `url(${element.imageUrl})`;
         borderStyle.backgroundSize = "cover";
         borderStyle.backgroundPosition = "center";
       } else if (element.content) {
+<<<<<<< HEAD
         // Simple CSS border
         borderStyle.border = element.content; // e.g. "4px solid #d4af37"
+=======
+        borderStyle.border = element.content;
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
         borderStyle.boxSizing = "border-box";
       }
 
       return <div key={element.id} style={borderStyle} />;
     }
 
+<<<<<<< HEAD
     // 🖋️ TEXT / SIGNATURE
     if (element.type === "text" || element.type === "signature") {
+=======
+    // 🟪 CORNER FRAME (rotated mini-panels)
+    if (element.type === "cornerFrame") {
+      const style: React.CSSProperties = {
+        ...baseStyle,
+        transform: `rotate(${element.rotate ?? 45}deg)`,
+        transformOrigin: "center",
+        backgroundColor: element.backgroundColor,
+        backgroundImage: element.imageUrl ? `url(${element.imageUrl})` : undefined,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        borderRadius: 0,
+        pointerEvents: "auto",
+      };
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
       return (
         <div
           key={element.id}
@@ -108,6 +188,7 @@ export default function CertificateTemplate({
           onDragStart={(e) => handleDragStart(e, element.id)}
           onDrag={(e) => handleDrag(e, element)}
           onClick={() => onElementSelect?.(element.id)}
+<<<<<<< HEAD
           style={{
             ...baseStyle,
             fontSize: element.fontSize ? `${element.fontSize}px` : "14px",
@@ -123,6 +204,90 @@ export default function CertificateTemplate({
       );
     }
 
+=======
+          style={style}
+        />
+      );
+    }
+
+    // ⬜ INNER FRAME (white rectangle)
+    if (element.type === "innerFrame") {
+      const innerFrameStyle: React.CSSProperties = {
+        ...baseStyle,
+        backgroundColor: element.backgroundColor || "#ffffff",
+        border: element.borderWidth
+          ? `${element.borderWidth}px ${element.borderStyle ?? "solid"} ${element.borderColor ?? "#000"}`
+          : undefined,
+        boxSizing: "border-box",
+        pointerEvents: "auto",
+        cursor: "pointer",
+      };
+
+      return (
+        <div
+          key={element.id}
+          draggable
+          onDragStart={(e) => handleDragStart(e, element.id)}
+          onDrag={(e) => handleDrag(e, element)}
+          onClick={() => onElementSelect?.(element.id)}
+          style={innerFrameStyle}
+        />
+      );
+    }
+
+    // 🖋️ TEXT / SIGNATURE STYLE RENDER
+    if (element.type === "text" || element.type === "signature") {
+      const textStyle: React.CSSProperties = {
+        ...baseStyle,
+        fontFamily: element.fontFamily ?? "Arial",
+        ...(element.fontFamily ? { fontFamily: element.fontFamily } : {}),
+        fontSize: element.fontSize ? `${element.fontSize}px` : "14px",
+        fontWeight: element.bold ? "bold" : element.fontWeight ?? "normal",
+        fontStyle: element.italic ? "italic" : "normal",
+        textDecoration: element.underline ? "underline" : "none",
+        textAlign: (element.textAlign as "left" | "center" | "right") ?? element.align ?? "center",
+        letterSpacing: element.letterSpacing ? `${element.letterSpacing}px` : undefined,
+        textTransform: element.textTransform ?? "none",
+        color: element.color ?? "#000000",
+        whiteSpace: "pre-line",
+        lineHeight: element.type === "signature" ? "1.4" : "1.6",
+        width: element.textFrameWidth ? `${element.textFrameWidth}px` : element.width ? `${element.width}px` : "auto",
+        height: element.textFrameHeight ? `${element.textFrameHeight}px` : element.height ? `${element.height}px` : "auto",
+        overflow: "hidden",
+        boxSizing: "border-box",
+        pointerEvents: "auto",
+
+
+
+
+ //FRAME OUTLINE SHOW
+
+
+//outline: showDebugFrames ? "1px dashed red" : "none",
+//backgroundColor: showDebugFrames ? "rgba(255,0,0,0.05)" : "transparent",
+
+
+      };
+
+
+      
+      const displayedContent = clampTextForRender(element.content, element.maxChars);
+
+      return (
+        <div
+          key={element.id}
+          draggable
+          onDragStart={(e) => handleDragStart(e, element.id)}
+          onDrag={(e) => handleDrag(e, element)}
+          onClick={() => onElementSelect?.(element.id)}
+          style={textStyle}
+        >
+          {displayedContent}
+        </div>
+      );
+    } 
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
     return null;
   };
 
@@ -141,4 +306,8 @@ export default function CertificateTemplate({
         .map((element) => renderElement(element))}
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b

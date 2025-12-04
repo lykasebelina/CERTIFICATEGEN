@@ -3,16 +3,25 @@
 import { CertificateElement } from "../../../types/certificate";
 import { SIZE_MAP } from "../utils/sizeUtils";
 import {
+<<<<<<< HEAD
   detectBorderType,
   detectBorderThickness,
   formatBorderPrompt,
 } from "../utils/borderPromptUtils";
+=======
+  detectBorderThickness,
+} from "../utils/borderPromptUtils"; // NOTE: detectBorderType removed from import
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 import {
   extractBorderColor,
   ensureContrast,
   shadeColor,
 } from "../utils/borderColorUtils";
+<<<<<<< HEAD
 import { determineImageSize, generateImageWithDALLE } from "../utils/dalleUtils";
+=======
+// NOTE: Imports for dalleUtils removed
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 
 export async function generateBorder(
   userPrompt: string,
@@ -27,15 +36,25 @@ export async function generateBorder(
     return [];
   }
 
+<<<<<<< HEAD
   const borderType = detectBorderType(userPrompt);
+=======
+  // NOTE: detectBorderType check removed, as we only support 'simple' CSS border now.
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const thickness = detectBorderThickness(userPrompt);
   const rawColor = extractBorderColor(userPrompt) || "#000000";
 
   // Default background is white; if background element exists, use that
+<<<<<<< HEAD
+=======
+  // NOTE: Since this function only generates border, it can't reliably find a previously generated 'background'
+  // It's safer to use the background color from the prompt or default to white, but maintaining existing contrast logic:
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   const backgroundElement = elements.find((e) => e.type === "background");
   const bgColor = backgroundElement?.backgroundColor || "#FFFFFF";
   const color = ensureContrast(rawColor, bgColor);
 
+<<<<<<< HEAD
   if (borderType === "simple") {
     console.log("🖋️ Generating simple CSS border...");
 
@@ -92,3 +111,36 @@ export async function generateBorder(
 
   return elements;
 }
+=======
+  console.log("🖋️ Generating simple CSS border...");
+
+  const inset = thickness * 2;
+  let style = "solid";
+  const lower = userPrompt.toLowerCase();
+
+  // Determine border style
+  if (lower.includes("double")) style = "double";
+  else if (lower.includes("dotted")) style = "dotted";
+  else if (lower.includes("dashed")) style = "dashed";
+
+  // For "double" style, use outer/inner color shading
+  const adjustedColor =
+    style === "double" ? shadeColor(color, -30) : color;
+
+  elements.push({
+    id: `border-${Date.now()}`,
+    type: "border",
+    x: inset,
+    y: inset,
+    width: canvasSize.width - inset * 2,
+    height: canvasSize.height - inset * 2,
+    zIndex: 2,
+    opacity: 1,
+    content: `${thickness}px ${style} ${adjustedColor}`, // CSS content format
+  });
+
+  console.log(`✅ ${thickness}px ${style} ${adjustedColor} border generated`);
+
+  return elements;
+}
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b

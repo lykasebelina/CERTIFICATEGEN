@@ -1,5 +1,6 @@
 // src/lib/openai/utils/borderPromptUtils.ts
 
+<<<<<<< HEAD
 import type { CertificateSize } from "./sizeUtils";
 
 /** Detects border type (simple geometric vs ornate) */
@@ -21,6 +22,11 @@ export function detectBorderType(prompt: string): "simple" | "ornate" {
   if (simpleHints.some((w) => lower.includes(w))) return "simple";
   return "simple"; // fallback
 }
+=======
+// NOTE: import type { CertificateSize } from "./sizeUtils" is no longer needed
+// NOTE: detectBorderType function removed
+// NOTE: formatBorderPrompt function removed
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 
 /** Detects thickness keywords */
 export function detectBorderThickness(prompt: string): number {
@@ -30,6 +36,7 @@ export function detectBorderThickness(prompt: string): number {
   if (lower.includes("thick") || lower.includes("bold")) return 10;
   if (lower.includes("double")) return 8;
   return 4; // default
+<<<<<<< HEAD
 }
 
 /** Formats prompt for DALL·E (ornate border generation) */
@@ -53,3 +60,6 @@ Highly detailed ${safePrompt} decorative border design for a certificate.
 Negative prompt: text, words, logos, photo, shadow, background fill
 `;
 }
+=======
+}
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b

@@ -9,8 +9,13 @@ interface EditorBottomBarProps {
 const EditorBottomBar: React.FC<EditorBottomBarProps> = ({ zoom, setZoom }) => {
   return (
     <div className="flex-none w-full h-20 flex flex-wrap justify-between items-center gap-4 p-5 border-t border-slate-700 bg-slate-900">
+<<<<<<< HEAD
       <div className="px-3 py-1 border-2 border-cyan-400 rounded-full text-white text-sm font-medium">
         1 / 30
+=======
+      <div className="px-3 py-1 border-0 border-cyan-400 rounded-full text-white text-sm font-medium">
+    
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
       </div>
 
       <div className="flex flex-wrap items-center gap-4">

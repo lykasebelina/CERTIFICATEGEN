@@ -30,10 +30,23 @@ export async function generateImageWithDALLE(
       size,
       quality: "standard",
       style: "natural",
+<<<<<<< HEAD
     });
     return response?.data?.[0]?.url ?? "";
+=======
+      // 🟢 CRITICAL CHANGE: Request Base64 JSON instead of URL
+      response_format: "b64_json", 
+    });
+    
+    // Return the Base64 string data
+    return response.data[0].b64_json ?? "";
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
   } catch (error) {
     console.error("❌ Error generating image:", error);
     throw error;
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b

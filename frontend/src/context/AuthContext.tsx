@@ -1,7 +1,16 @@
+<<<<<<< HEAD
+=======
+//AuthContext.tsx
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 interface AuthContextType {
   user: User | null;
   loading: boolean;

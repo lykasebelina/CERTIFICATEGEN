@@ -1,4 +1,5 @@
 import {
+<<<<<<< HEAD
   Home,
   Sparkles,
   Library,
@@ -10,6 +11,21 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+=======
+  //Activity,
+  BarChart,
+  //Home
+  Sparkles,
+  Library,
+  FileText,
+ // Palette,
+  //Heart,
+  Settings as SettingsIcon,
+  //Award,
+  ChevronLeft,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 import { useNavigate, useLocation } from "react-router-dom";
 import certigenLogo from "../assets/certigen_logo.png";
 import { useAuth } from "@/context/AuthContext";
@@ -41,12 +57,25 @@ function Sidebar({
 
   const menuItems = [
     { id: "ai-generate", label: "AI Generate", icon: Sparkles },
+<<<<<<< HEAD
     { id: "home-dashboard", label: "Home", icon: Home },
     { id: "template-library", label: "Template Library", icon: Library },
     { id: "custom-template", label: "Custom Template Hub", icon: FileText },
     { id: "brand-kit", label: "Brand Kit", icon: Palette },
     { id: "my-certificates", label: "My Certificates", icon: Award },
     { id: "favorites", label: "Favorites", icon: Heart },
+=======
+   
+//    { id: "template-library", label: "Template Library", icon: Library },
+    { id: "custom-template", label: "Custom Template Hub", icon: FileText },
+    
+    { id: "generated-templates", label: "Generated Certificates", icon: Library },
+
+
+   // { id: "favorites", label: "Favorites", icon: Award },
+   // { id: "brand-kit", label: "Brand Kit", icon: Palette },
+    { id: "home-dashboard", label: "My Activity", icon: BarChart },
+>>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
     { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
