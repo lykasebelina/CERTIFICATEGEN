@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-//src/main.tsx
-
->>>>>>> fc3e88fcbd0a45183e91a5abd415c1c25b49290b
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
