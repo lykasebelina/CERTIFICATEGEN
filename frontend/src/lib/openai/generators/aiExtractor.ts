@@ -1,5 +1,3 @@
-//src/lib/openai/generators/aiExtractor.ts
-
 export interface AIDetails {
   institution: string;
   department: string;
@@ -16,8 +14,7 @@ export interface AIDetails {
 }
 
 export async function extractCertificateDetailsAI(prompt: string): Promise<AIDetails> {
-  // 🟢 FIXED: Changed hardcoded 'http://localhost:4000/extract' to relative path '/api/extract'.
-  // This assumes the backend 'ai.ts' is deployed as a Vercel Serverless Function at /api/extract.
+  // CRITICAL FIX: Ensures POST request to the Vercel API endpoint
   const res = await fetch("/api/extract", { 
     method: "POST",
     headers: { "Content-Type": "application/json" },
